@@ -1,6 +1,7 @@
 package BlogDB::Web::Controller::Root;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
 use Try::Tiny;
+use Data::UUID;
 
 sub get_register ($c) {
     $c->set_template( 'register' );
@@ -63,27 +64,82 @@ sub post_register ($c) {
 
 sub get_forgot ($c) {
     $c->set_template( 'forgot' );
-
 }
 
 sub post_forgot ($c) {
     $c->set_template( 'forgot' );
+    
+    my $username = $c->stash->{form_username} = $c->param('username');
 
+    # Find the user -- if they have an @, assume it's an email addresss.
+    my $person = $c->db->resultset('Person')->find( index($username, '@') == -1
+        ? { username => $username }
+        : { email    => $username }
+    );
+
+    push @{$c->stash->{errors}}, "No such username or email address."
+        unless $person;
+
+    return 0 if $c->stash->{errors}; # Drop out of processing if there are errors.
+
+    my $reset_token = $person->create_related( 'password_tokens', {
+        token => Data::UUID->new->create_str,
+    });
+
+    # TODO
+    # This is the part where we email $person->email with $c->url_for( 'reset', { token => $reset_token->token } );
+
+    $c->stash->{success} = 1;
 }
 
 sub get_reset ($c) {
     $c->set_template( 'reset' );
 
+    $c->stash->{form_token} = $c->param('token');
+
 }
 
 sub post_reset ($c) {
     $c->set_template( 'reset' );
+    
+    my $form_token = $c->stash->{form_token}    = $c->param('reset_token');
+    my $password   = $c->stash->{form_password} = $c->param('password');
+    my $confirm    = $c->stash->{form_confirm}  = $c->param('confirm');
 
-}
+    # Error Checking - We have all of the information.
+    push @{$c->stash->{errors}}, "Password is required."               unless $password;
+    push @{$c->stash->{errors}}, "Confirm password is required."       unless $password;
+    push @{$c->stash->{errors}}, "Password & Confirmation must match." unless $password eq $confirm;
+    push @{$c->stash->{errors}}, "Password must be at least 7 chars."  unless 7 < length($password);
 
-sub post_reset ($c) {
-    $c->set_template( 'login' );
+    return 0 if $c->stash->{errors}; # Drop out of processing, there are errors..
 
+    my $token = $c->db->resultset('PasswordToken')->search({
+        token       => $form_token,
+        is_redeemed => 0,
+    })->first;
+
+    push @{$c->stash->{errors}}, "Invalid token"  unless $token;;
+    return 0 if $c->stash->{errors}; # Drop out of processing, there are errors..
+
+    my $person = try {
+        $c->db->storage->schema->txn_do( sub {
+            # Update the user's password.
+            $token->person->auth_password->update_password( $password );
+            
+            # Mark the token used.
+            $token->is_redeemed( 1 );
+            $token->update;
+
+            return $token->person;
+        });
+    } catch {
+        push @{$c->stash->{errors}}, "The password could not be reset: $_";
+    };
+
+    return 0 if $c->stash->{errors}; # Drop out of processing the registration if there are any errors.
+
+    $c->stash->{success} = 1;
 }
 
 sub post_login ($c) {

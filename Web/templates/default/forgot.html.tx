@@ -1,0 +1,34 @@
+%%  cascade default::_::layout { title => 'Forgot Password',
+%%      
+%%  }
+
+%% override panel -> {
+        <div class="row">
+            <!-- Error Handling On LHS -->
+            <div class="col">
+%%              if ( $errors.size() ) { 
+                <div style="margin-top: 2em" class="alert alert-danger" role="alert">
+                    There were errors with your request that could not be resolved:
+                    <ul>
+%%                  for $errors -> $error {
+                        <li>[% $error %]</li>
+%%                  } 
+                    </ul>
+                </div>
+%%              } 
+            </div>
+
+            <!-- Forgot Handling On RHS -->
+            <div class="col">
+                <form method="post" action="[% $c.url_for( 'do_forgot_password' ) %]">
+%%                  include 'default/_/form/input.tx' { type => 'text', name => 'username',
+%%                      title => 'Username (or email)',
+%%                      help  => 'The username or email address you signed up with.',
+%%                      value => $form_username,
+%%                  };
+
+                    <button type="submit" class="btn btn-primary float-end">Send Reset Email</button>
+
+                </form>
+            </div>
+%%  } 
