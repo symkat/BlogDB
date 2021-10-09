@@ -31,11 +31,14 @@ sub startup ($self) {
     });
 
     # Get the router.
-    my $r = $self->routes;
+    my $router = $self->routes;
 
-    # Create a dispatch chain that requires the user is logged in.
-    my $auth = $r->under( '/' => sub ($c) {
-        
+    # Create a dispatch chain that gives us a logged in user if we have one.
+    #
+    # This will NOT throw out a user.
+    # Templates must consider that $person is undef when no one is logged in.
+    my $r = $router->under( '/' => sub ($c) {
+
         # Login via session cookie.
         if ( $c->session('uid') ) {
             my $person = $c->db->resultset('Person')->find( $c->session('uid') );
@@ -44,11 +47,17 @@ sub startup ($self) {
                 $c->stash->{person} = $person;
                 return 1;
             }
-            $c->redirect_to( $c->url_for( 'auth_login' ) );
-            return undef;
         }
 
-        $c->redirect_to( $c->url_for( 'auth_login' ) );
+        return 1;
+    });
+
+    # Only allow logged in users to access the page.
+    my $auth = $r->under( '/' => sub ($c) {
+
+        return 1 if $c->stash->{person};
+
+        $c->redirect_to( $c->url_for( 'homepage' ) );
         return undef;
     });
 
@@ -56,14 +65,14 @@ sub startup ($self) {
     $r->get('/')->to( 'Root#get_homepage' )->name('homepage');
 
     # Standard user stuff: register, forgot password, login and logout.
-    $r->get ( '/register'     )->to( 'Root#get_register' )->name('register');
-    $r->post( '/register'     )->to( 'Root#post_register')->name('do_register');
-    $r->get ( '/forgot'       )->to( 'Root#get_forgot'   )->name('forgot_password');
+    $r->get ( '/register'     )->to( 'Root#get_register' )->name('register'          );
+    $r->post( '/register'     )->to( 'Root#post_register')->name('do_register'       );
+    $r->get ( '/forgot'       )->to( 'Root#get_forgot'   )->name('forgot_password'   );
     $r->post( '/forgot'       )->to( 'Root#post_forgot'  )->name('do_forgot_password');
-    $r->get ( '/forgot/:token')->to( 'Root#get_reset'    )->name('reset_password');
-    $r->post( '/forgot/:token')->to( 'Root#post_reset'   )->name('do_reset_password');
-    $r->post( '/login'        )->to( 'Root#post_login'   )->name('do_login');
-    $r->post( '/logout'       )->to( 'Root#post_logout'  )->name('do_logout');
+    $r->get ( '/forgot/:token')->to( 'Root#get_reset'    )->name('reset_password'    );
+    $r->post( '/forgot/:token')->to( 'Root#post_reset'   )->name('do_reset_password' );
+    $r->post( '/login'        )->to( 'Root#post_login'   )->name('do_login'          );
+    $r->post( '/logout'       )->to( 'Root#post_logout'  )->name('do_logout'         );
 
     # /user/ routes
     $r->get    ( '/user/:name'            )->to( 'User#get_user'     )->name( 'user'             );
