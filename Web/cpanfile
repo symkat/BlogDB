@@ -1,0 +1,6 @@
+requires 'Minion';
+requires 'Mojolicious::Plugin::XslateRenderer';
+requires 'Mojolicious::Plugin::RenderFile';
+requires 'Mojo::Pg';
+requires 'DateTime::Format::Pg';
+requires 'BlogDB::DB';
