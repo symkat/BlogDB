@@ -95,15 +95,15 @@ sub startup ($self) {
 
     # /new/
     $r->post   ( '/new'               )->to( 'Create#post_new'      )->name( 'do_add_new_blog'   );
-    $r->get    ( '/new/:name'         )->to( 'Create#get_new_blog'  )->name( 'update_new_blog'   );
-    $r->post   ( '/new/:name'         )->to( 'Create#post_new_blog' )->name( 'do_update_new_blog');
-    $auth->post( '/new/:name/push'    )->to( 'Create#post_push_blog')->name( 'do_push_new_blog'  );
+    $r->get    ( '/new/*name'         )->to( 'Create#get_new_blog'  )->name( 'update_new_blog'   );
+    $r->post   ( '/new/*name'         )->to( 'Create#post_new_blog' )->name( 'do_update_new_blog');
 
     # /tags/
     $r->get    ( '/tags'         )->to( 'Tags#get_tags'        )->name( 'tags'           );
     $auth->post( '/tags/suggest' )->to( 'Tags#post_suggest_tag')->name( 'do_suggest_tag' );
     $auth->post( '/tags/vote'    )->to( 'Tags#post_vote_tag'   )->name( 'do_vote_tag'    );
     $auth->post( '/tags/delete'  )->to( 'Tags#post_delete_tag' )->name( 'do_delete_tag'  );
+    $auth->post( '/tags/approve' )->to( 'Tags#post_approve_tag')->name( 'do_approve_tag' );
 
 }
 

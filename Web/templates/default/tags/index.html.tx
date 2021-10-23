@@ -1,0 +1,62 @@
+%%  cascade default::_::layout { title => 'Tags',
+%%      
+%%  }
+
+%%  override panel -> {
+
+%%              if ( $errors.size() ) { 
+                <div style="margin-top: 2em" class="alert alert-danger" role="alert">
+                    There were errors with your request that could not be resolved:
+                    <ul>
+%%                  for $errors -> $error {
+                        <li>[% $error %]</li>
+%%                  } 
+                    </ul>
+                </div>
+%%              } 
+            </div>
+
+        <!-- Add New Tag Section -->
+        <div class="d-flex justify-content-center">
+            <form method="post" class="row row-cols-lg-auto align-items-center" action="[% $c.url_for( 'do_suggest_tag' ) %]">
+                <div class="col-12">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">#</span>
+                    <input type="text" class="form-control" placeholder="newTag" name="tag" value="[% $form_tag %]" aria-label="New Tag Name" aria-describedby="basic-addon1">
+                </div>
+                </div>
+                <div class="col-12">
+                <div class="form-check form-switch">
+                    <input name="is_adult" [% $form_adult ? " checked" : "" %] class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">Adult Tag?</label>
+                </div>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary float-end">Suggest</button>
+                </div>
+            </form>
+        </div>
+
+%%     if ( $success ) {
+        <div class="d-flex justify-content-center">
+            <p>Suggested #[% $tag_name %]!</p>
+        </div>
+%%     } 
+
+
+        <!-- List Pending Tags -->
+
+%%      for $pending_tags -> $tag {
+        <p>[% $tag.name %] - [% $tag.id %]</p>
+%%      }
+
+
+        <!-- List Tags -->
+
+%%      for $tags -> $tag {
+        <p>[% $tag.name %] - [% $tag.id %]</p>
+
+%%      }
+
+
+%%  }

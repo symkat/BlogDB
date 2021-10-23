@@ -3,6 +3,11 @@ use Mojo::Base 'Mojolicious::Controller', -signatures;
 use Try::Tiny;
 use Data::UUID;
 
+sub get_homepage ($c) {
+    $c->set_template( 'index' );
+
+}
+
 sub get_register ($c) {
     $c->set_template( 'register' );
 

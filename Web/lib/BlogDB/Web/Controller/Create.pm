@@ -7,6 +7,8 @@ sub post_new ($c) {
 
 sub get_new_blog ($c) {
     $c->set_template( 'new/index' );
+
+    $c->stash->{blog_url} = $c->param('name');
 }
 
 sub post_new_blog ($c) {

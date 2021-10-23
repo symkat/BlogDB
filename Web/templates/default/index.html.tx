@@ -1,0 +1,19 @@
+%%  cascade default::_::layout { title => 'Home',
+%%      
+%%  }
+
+%%  override panel -> {
+
+    <!-- Add New Blog Section -->
+    <div class="d-flex justify-content-center">
+        <form method="post" class="row row-cols-lg-auto align-items-center" action="[% $c.url_for( 'do_add_blog' ) %]">
+            <div class="col-12">
+                <input placeholder="http://reallycoolblog.com" type="text" name="url" value="[% $form_blog_url %]">
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary float-end">Next</button>
+            </div>
+        </form>
+    </div>
+
+%%  }
