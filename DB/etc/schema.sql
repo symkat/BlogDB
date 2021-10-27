@@ -89,6 +89,7 @@ CREATE TABLE blog_tag_map (
 CREATE TABLE pending_tag (
     id                          serial          PRIMARY KEY,
     name                        text            not null unique,
+    is_adult                    boolean         not null default false,
     created_at                  timestamptz     not null default current_timestamp
 );
 

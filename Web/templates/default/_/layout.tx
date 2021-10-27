@@ -56,7 +56,7 @@
                     <button class="btn btn-outline-success" type="submit">Login</button>
                 </form>
                 <div class="container-fluid">
-                    <p style="margin-right: 0em;"><a href="[% $c.url_for('register') %]">Register</a> | <a href="[% $c.url_for( 'forgot' ) %]">Forgot</a></p>
+                    <p style="margin-right: 0em;"><a href="[% $c.url_for('register') %]">Register</a> | <a href="[% $c.url_for( 'forgot_password' ) %]">Forgot</a></p>
                 </div>
             </div>
 %%          }

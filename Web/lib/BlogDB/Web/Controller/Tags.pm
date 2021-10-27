@@ -1,5 +1,6 @@
 package BlogDB::Web::Controller::Tags;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
+use Try::Tiny;
 
 sub get_tags ($c) {
     $c->set_template( 'tags/index' );
@@ -35,11 +36,11 @@ sub post_suggest_tag ($c) {
     return 0 if $c->stash->{errors};
 
     $c->db->resultset('PendingTag')->create({
-        name => $tag_name,
+        name     => $tag_name,
+        is_adult => $is_adult ? 1 : 0,
     });
 
-    $c->stash->{success}   = 1;
-    $c->stash->{tag_name} = $tag_name;
+    $c->redirect_to( $c->url_for( 'tags' ) );
 }
 
 sub post_vote_tag ($c) {
@@ -61,10 +62,10 @@ sub post_vote_tag ($c) {
     my $vote = $c->db->resultset('TagVote')->search( {
         tag_id    => $tag->id,
         person_id => $c->stash->{person}->id,
-    });
+    })->first;
 
     if ( $vote ) {
-        $vote->vote( ! $vote->vote );
+        $vote->vote( $vote->vote ? 0 : 1 );
         $vote->update;
     } else {
         $c->stash->{person}->create_related( 'tag_votes', {
@@ -72,21 +73,42 @@ sub post_vote_tag ($c) {
         });
     }
 
-    $c->stash->{success} = 1;
+    $c->redirect_to( $c->url_for( 'tags' ) );
 }
 
 sub post_delete_tag ($c) {
     $c->set_template( 'tags/index' );
-
+    
     push @{$c->stash->{tags}},         $c->db->resultset('Tag')->all;
     push @{$c->stash->{pending_tags}}, $c->db->resultset('PendingTag')->all;
 
     my $tag_name = $c->stash->{form_tag} = $c->param('tag');
+    
+    my $tag = $c->db->resultset('PendingTag')->search({ name => $tag_name })->first;
+
+    push @{$c->stash->{errors}}, "No such tag?"
+        unless $tag;
+
+    return 0 if $c->stash->{errors};
+
+    try {
+        $c->db->storage->schema->txn_do( sub {
+            $c->db->resultset('TagVote')->search({
+                tag_id => $tag->id,
+            })->delete;
+            $tag->delete;
+        });
+    } catch {
+        push @{$c->stash->{errors}}, "The tag could not be deleted $_";
+    };
+    return 0 if $c->stash->{errors}; 
+
+    $c->redirect_to( $c->url_for( 'tags' ) );
 }
 
 sub post_approve_tag ($c) {
     $c->set_template( 'tags/index' );
-
+    
     push @{$c->stash->{tags}},         $c->db->resultset('Tag')->all;
     push @{$c->stash->{pending_tags}}, $c->db->resultset('PendingTag')->all;
 
@@ -99,12 +121,23 @@ sub post_approve_tag ($c) {
 
     return 0 if $c->stash->{errors};
 
-    $c->db->resultset('Tag')->create({
-        name     => $tag->name,
-        is_adult => $tag->is_adult,
-    });
-
-    $c->stash->{success} = 1;
+    try {
+        $c->db->storage->schema->txn_do( sub {
+            $c->db->resultset('Tag')->create({
+                name     => $tag->name,
+                is_adult => $tag->is_adult,
+            });
+            $c->db->resultset('TagVote')->search({
+                tag_id => $tag->id,
+            })->delete;
+            $tag->delete;
+        });
+    } catch {
+        push @{$c->stash->{errors}}, "The tag could not be created: $_";
+    };
+    return 0 if $c->stash->{errors}; 
+    
+    $c->redirect_to( $c->url_for( 'tags' ) );
 }
 
 1;
