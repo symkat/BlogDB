@@ -36,4 +36,22 @@ sub post_unpublish ($c) {
 
 }
 
+# Handle New Blogs
+
+sub get_new_blogs ($c) {
+
+}
+
+sub post_new_blog ($c) {
+
+}
+
+sub get_edit_new_blog ($c) {
+
+}
+
+sub post_edit_new_blog ($c) {
+
+}
+
 1;
