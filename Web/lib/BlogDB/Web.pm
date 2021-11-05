@@ -85,19 +85,21 @@ sub startup ($self) {
     $auth->post( '/user/settings/email'   )->to( 'User#post_email'   )->name( 'do_user_email'    );
 
     # /blog/ routes
-    $r->get    ( '/blog/:name'            )->to( 'Blog#get_blog'      )->name( 'blog'             ); # View A Specific Blog.
-
-    $auth->get ( '/blog/new'              )->to( 'Blog#get_new_blogs'  )->name( 'new_blogs'        ); # List pending blogs for approval.
     $r->post   ( '/blog/new'              )->to( 'Blog#post_new_blog'  )->name( 'do_new_blog'      ); # Create a new blog.
-    $r->get    ( '/blog/new/:name'        )->to( 'Blog#get_edit_blog'  )->name( 'edit_new_blog'    ); # Get the edit page for a new blog.
-    $r->post   ( '/blog/new/:name'        )->to( 'Blog#post_edit_blog' )->name( 'do_edit_new_blog' ); # Post an update with the edit page.
 
-    $auth->post( '/blog/:name/follow'     )->to( 'Blog#post_follow'   )->name( 'do_follow_blog'   );
-    $auth->post( '/blog/:name/unfollow'   )->to( 'Blog#post_unfollow' )->name( 'do_unfollow_blog' );
-    $auth->get ( '/blog/:name/settings'   )->to( 'Blog#get_settings'  )->name( 'blog_settings'    );
-    $auth->post( '/blog/:name'            )->to( 'Blog#post_settings' )->name( 'do_blog_settings' );
-    $auth->post( '/blog/:name/publish'    )->to( 'Blog#post_publish'  )->name( 'do_publish'       );
-    $auth->post( '/blog/:name/unpublish'  )->to( 'Blog#post_unpublish')->name( 'do_unpublish'     );
+#    $r->get    ( '/view/:id/:name'        )->to( 'Blog#get_blog'      )->name( 'blog'             ); # View A Specific Blog.
+#
+#    $auth->get ( '/blog/new'              )->to( 'Blog#get_new_blogs'  )->name( 'new_blogs'        ); # List pending blogs for approval.
+#    $r->get    ( '/blog/new/:id/:title'   )->to( 'Blog#get_edit_blog'  )->name( 'edit_new_blog'    ); # Get the edit page for a new blog.
+#    $r->post   ( '/blog/new/:name'        )->to( 'Blog#post_edit_blog' )->name( 'do_edit_new_blog' ); # Post an update with the edit page.
+#
+#    $auth->post( '/blog/:name/follow'     )->to( 'Blog#post_follow'   )->name( 'do_follow_blog'   );
+#    $auth->post( '/blog/:name/unfollow'   )->to( 'Blog#post_unfollow' )->name( 'do_unfollow_blog' );
+#    $auth->get ( '/blog/:name/settings'   )->to( 'Blog#get_settings'  )->name( 'blog_settings'    );
+#    $auth->post( '/blog/:name'            )->to( 'Blog#post_settings' )->name( 'do_blog_settings' );
+#    $auth->post( '/blog/:name/publish'    )->to( 'Blog#post_publish'  )->name( 'do_publish'       );
+#    $auth->post( '/blog/:name/unpublish'  )->to( 'Blog#post_unpublish')->name( 'do_unpublish'     );
+    
 
     # /tags/
     $r->get    ( '/tags'         )->to( 'Tags#get_tags'        )->name( 'tags'           );

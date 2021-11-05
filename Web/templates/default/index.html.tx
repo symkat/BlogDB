@@ -6,7 +6,7 @@
 
     <!-- Add New Blog Section -->
     <div class="d-flex justify-content-center">
-        <form method="post" class="row row-cols-lg-auto align-items-center" action="[% $c.url_for( 'do_add_blog' ) %]">
+        <form method="post" class="row row-cols-lg-auto align-items-center" action="[% $c.url_for( 'do_new_blog' ) %]">
             <div class="col-12">
                 <input placeholder="http://reallycoolblog.com" type="text" name="url" value="[% $form_blog_url %]">
             </div>
