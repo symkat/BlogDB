@@ -56,6 +56,33 @@ CREATE TABLE blog (
     created_at                  timestamptz     not null default current_timestamp
 );
 
+-- Root table for the blog listing.
+CREATE TABLE pending_blog (
+    id                          serial          PRIMARY KEY,
+    url                         text            not null unique,
+    img_url                     text            ,
+    rss_url                     text            ,
+    title                       text            ,
+    tagline                     text            ,
+    about                       text            ,
+    last_updated                timestamptz     ,
+    is_published                boolean         not null default true,
+    is_adult                    boolean         not null default false,
+
+    -- If a registered user submitted the blog, they will be set as the
+    -- submitter and can edit the blog data until it's approved.
+    --
+    -- If an anonymous user submitted the blog, they will have an edit
+    -- token set in their cookies, and that token will be set here, they
+    -- can edit the blog until their session expires.
+    submitter_id                int             references person(id),
+    edit_token                  text            not null,
+
+    state                       text            not null,
+
+    created_at                  timestamptz     not null default current_timestamp
+);
+
 -- RSS Reader will create these for the blogs.
 CREATE TABLE blog_entry (
     id                          serial          PRIMARY KEY,

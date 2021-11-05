@@ -189,6 +189,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 pending_blogs
+
+Type: has_many
+
+Related object: L<BlogDB::DB::Result::PendingBlog>
+
+=cut
+
+__PACKAGE__->has_many(
+  "pending_blogs",
+  "BlogDB::DB::Result::PendingBlog",
+  { "foreign.submitter_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 person_follow_blog_maps
 
 Type: has_many
@@ -265,8 +280,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-10-06 18:19:48
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:pH+QD6dGCkPfgVuSzSHdGg
+# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-11-04 01:11:09
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:uamr/+RThTQZLjXkv6wcxQ
 
 sub setting {
     my ( $self, $setting, $value ) = @_;
