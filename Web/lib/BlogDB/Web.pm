@@ -22,7 +22,9 @@ sub startup ($self) {
 
     # Create $self->db as a BlogDB::DB connection.
     $self->helper( db => sub {
-        return state $db = BlogDB::DB->connect($self->config->{database}->{blogdb});
+        return state $db = exists $ENV{BLOGDB_TESTMODE} && $ENV{BLOGDB_TESTMODE} == 1
+            ? BlogDB::DB->connect( $ENV{BLOGDB_DSN}, '', '' )
+            : BlogDB::DB->connect($self->config->{database}->{blogdb});
     });
 
     # Create $self->set_template
