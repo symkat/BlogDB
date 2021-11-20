@@ -76,7 +76,7 @@ CREATE TABLE pending_blog (
     -- token set in their cookies, and that token will be set here, they
     -- can edit the blog until their session expires.
     submitter_id                int             references person(id),
-    edit_token                  text            not null,
+    edit_token                  text            ,
 
     state                       text            not null,
 

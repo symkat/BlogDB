@@ -100,7 +100,7 @@ __PACKAGE__->table("pending_blog");
 =head2 edit_token
 
   data_type: 'text'
-  is_nullable: 0
+  is_nullable: 1
 
 =head2 state
 
@@ -144,7 +144,7 @@ __PACKAGE__->add_columns(
   "submitter_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "edit_token",
-  { data_type => "text", is_nullable => 0 },
+  { data_type => "text", is_nullable => 1 },
   "state",
   { data_type => "text", is_nullable => 0 },
   "created_at",
@@ -204,8 +204,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-11-05 14:49:36
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4Ms5W+IBBcccbKjRTi1z8A
+# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-11-20 18:43:08
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Nmw2JISUfm8bGD434BTYaw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
