@@ -1,0 +1,12 @@
+%%  cascade default::_::layout { title => 'List Pending Blogs',
+%%      
+%%  }
+
+%% override panel -> {
+
+%%      for $blogs -> $blog {
+            [% $blog.title %]
+
+%%      }
+
+%% }

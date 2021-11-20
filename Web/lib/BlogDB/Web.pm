@@ -87,7 +87,10 @@ sub startup ($self) {
     $auth->post( '/user/settings/email'   )->to( 'User#post_email'   )->name( 'do_user_email'    );
 
     # /blog/ routes
-    $r->post   ( '/blog/new'              )->to( 'Blog#post_new_blog'  )->name( 'do_new_blog'      ); # Create a new blog.
+    $r->get    ( '/blog/new'              )->to( 'Blog#get_new_blogs'     )->name( 'new_blogs'        ); # List new blogs.
+    $r->post   ( '/blog/new'              )->to( 'Blog#post_new_blog'     )->name( 'do_new_blog'      ); # Create a new blog.
+    $r->get    ( '/blog/new/:id'          )->to( 'Blog#get_edit_new_blog' )->name( 'edit_new_blog'    ); # Show edit a new blog page.
+    $r->post   ( '/blog/new/:id'          )->to( 'Blog#post_edit_new_blog')->name( 'do_edit_new_blog' ); # Update a new blog.
 
 #    $r->get    ( '/view/:id/:name'        )->to( 'Blog#get_blog'      )->name( 'blog'             ); # View A Specific Blog.
 #
