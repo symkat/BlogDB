@@ -63,7 +63,7 @@
         </div>
     </nav>
 
-    <main class="content-fluid main">
+    <main class="container-fluid main">
 
 %%  block panel -> {}
 

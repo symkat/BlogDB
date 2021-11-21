@@ -95,10 +95,17 @@ sub get_edit_new_blog ($c) {
     $c->stash->{form_rss_url} = $blog->rss_url;
     $c->stash->{form_tagline} = $blog->tagline;
     $c->stash->{form_about}   = $blog->about;
+    $c->stash->{form_adult}   = $blog->is_adult;
 
-    # Make sure we have added the tags to the page.
-    push @{$c->stash->{tags}}, $c->db->resultset('Tag')->all;
+    my %seen = map { $_->tag_id => 1 } $blog->search_related('pending_blog_tag_maps', {})->all;
+    foreach my $tag ( $c->db->resultset('Tag')->all ) {
+        push @{$c->stash->{tags}}, {
+            id      => $tag->id,
+            name    => $tag->name,
+            checked => $seen{$tag->id} ? 1 : 0, 
+        };
 
+    }
 }
 
 sub post_edit_new_blog ($c) {
@@ -116,16 +123,25 @@ sub post_edit_new_blog ($c) {
     $c->stash->{form_rss_url} = $c->param("rss_url");
     $c->stash->{form_tagline} = $c->param("tagline");
     $c->stash->{form_about}   = $c->param("about");
+    $c->stash->{form_adult}   = $c->param("is_adult") ? 1 : 0;
 
-
-    $blog->title( $c->stash->{form_title} );
-    $blog->url( $c->stash->{form_url} );
-    $blog->img_url( $c->stash->{form_img_url} );
-    $blog->rss_url( $c->stash->{form_rss_url} );
-    $blog->tagline( $c->stash->{form_tagline} );
-    $blog->about( $c->stash->{form_about} );
+    $blog->title   ( $c->stash->{form_title}   );
+    $blog->url     ( $c->stash->{form_url}     );
+    $blog->img_url ( $c->stash->{form_img_url} );
+    $blog->rss_url ( $c->stash->{form_rss_url} );
+    $blog->tagline ( $c->stash->{form_tagline} );
+    $blog->about   ( $c->stash->{form_about}   );
+    $blog->is_adult( $c->stash->{form_adult}   );
 
     $blog->update;
+
+    # Remove all tags, then add the tags we have set.
+    $blog->search_related('pending_blog_tag_maps')->delete;
+    foreach my $tag_id ( @{$c->every_param('tags')}) {
+        $blog->create_related('pending_blog_tag_maps', {
+            tag_id => $tag_id,
+        });
+    }
 
     # Send the user back to the standard GET path.
     $c->redirect_to( $c->url_for( 'edit_new_blog', id => $blog->id ) );
