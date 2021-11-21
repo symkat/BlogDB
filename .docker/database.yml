@@ -13,19 +13,19 @@ services:
     volumes:
       - ./etc/schema.sql:/docker-entrypoint-initdb.d/000_schema.sql:ro
       - blogdb_database:/var/lib/postgresql/data
-#  minion-database:
-#    image: postgres:11
-#    container_name: meshmage-minion-db
-#    ports:
-#        - 127.0.0.1:5433:5432
-#    environment:
-#      - POSTGRES_PASSWORD=minion
-#      - POSTGRES_USER=minion
-#      - POSTGRES_DB=minion
-#    volumes:
-#      - minion_database:/var/lib/postgresql/data
+  minion-database:
+    image: postgres:11
+    container_name: blogdb-minion
+    ports:
+        - 127.0.0.1:5400:5432
+    environment:
+      - POSTGRES_PASSWORD=minion
+      - POSTGRES_USER=minion
+      - POSTGRES_DB=minion
+    volumes:
+      - minion_database:/var/lib/postgresql/data
 
 
 volumes:
   blogdb_database:
-#  minion_database:
+  minion_database:

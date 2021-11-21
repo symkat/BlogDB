@@ -74,6 +74,9 @@ sub post_new_blog ($c) {
         ),
     });
 
+    $c->minion->enqueue( download_screenshot => [ $blog->url, $blog->id ] );
+
+
     #$c->redirect_to( $c->url_for( 'do_blog_edit', id => $blog->id, title => 'new' ) );
 }
 

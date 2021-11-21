@@ -4,6 +4,7 @@ requires 'Mojolicious::Plugin::RenderFile';
 requires 'Mojo::Pg';
 requires 'DateTime::Format::Pg';
 requires 'BlogDB::DB';
+requires 'WebService::WsScreenshot';
 
 test_requires "Test::Postgresql58";
 test_requires "Test::More";

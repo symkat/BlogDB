@@ -32,6 +32,8 @@ sub startup ($self) {
         $c->stash->{template} = sprintf( "%s/%s", $c->config->{template_dir}, $name );
     });
 
+    $self->plugin( 'BlogDB::Web::Plugin::MinionTasks');
+
     # Get the router.
     my $router = $self->routes;
 
