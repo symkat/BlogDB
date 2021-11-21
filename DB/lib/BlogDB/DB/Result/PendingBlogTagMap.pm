@@ -1,12 +1,12 @@
 use utf8;
-package BlogDB::DB::Result::Tag;
+package BlogDB::DB::Result::PendingBlogTagMap;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-BlogDB::DB::Result::Tag
+BlogDB::DB::Result::PendingBlogTagMap
 
 =cut
 
@@ -29,11 +29,11 @@ use base 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime", "InflateColumn::Serializer");
 
-=head1 TABLE: C<tag>
+=head1 TABLE: C<pending_blog_tag_map>
 
 =cut
 
-__PACKAGE__->table("tag");
+__PACKAGE__->table("pending_blog_tag_map");
 
 =head1 ACCESSORS
 
@@ -42,17 +42,18 @@ __PACKAGE__->table("tag");
   data_type: 'integer'
   is_auto_increment: 1
   is_nullable: 0
-  sequence: 'tag_id_seq'
+  sequence: 'pending_blog_tag_map_id_seq'
 
-=head2 name
+=head2 blog_id
 
-  data_type: 'text'
+  data_type: 'integer'
+  is_foreign_key: 1
   is_nullable: 0
 
-=head2 is_adult
+=head2 tag_id
 
-  data_type: 'boolean'
-  default_value: false
+  data_type: 'integer'
+  is_foreign_key: 1
   is_nullable: 0
 
 =head2 created_at
@@ -69,12 +70,12 @@ __PACKAGE__->add_columns(
     data_type         => "integer",
     is_auto_increment => 1,
     is_nullable       => 0,
-    sequence          => "tag_id_seq",
+    sequence          => "pending_blog_tag_map_id_seq",
   },
-  "name",
-  { data_type => "text", is_nullable => 0 },
-  "is_adult",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "blog_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "tag_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "created_at",
   {
     data_type     => "timestamp with time zone",
@@ -95,55 +96,41 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
-=head1 UNIQUE CONSTRAINTS
-
-=head2 C<tag_name_key>
-
-=over 4
-
-=item * L</name>
-
-=back
-
-=cut
-
-__PACKAGE__->add_unique_constraint("tag_name_key", ["name"]);
-
 =head1 RELATIONS
 
-=head2 blog_tag_maps
+=head2 blog
 
-Type: has_many
+Type: belongs_to
 
-Related object: L<BlogDB::DB::Result::BlogTagMap>
+Related object: L<BlogDB::DB::Result::PendingBlog>
 
 =cut
 
-__PACKAGE__->has_many(
-  "blog_tag_maps",
-  "BlogDB::DB::Result::BlogTagMap",
-  { "foreign.tag_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
+__PACKAGE__->belongs_to(
+  "blog",
+  "BlogDB::DB::Result::PendingBlog",
+  { id => "blog_id" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
-=head2 pending_blog_tag_maps
+=head2 tag
 
-Type: has_many
+Type: belongs_to
 
-Related object: L<BlogDB::DB::Result::PendingBlogTagMap>
+Related object: L<BlogDB::DB::Result::Tag>
 
 =cut
 
-__PACKAGE__->has_many(
-  "pending_blog_tag_maps",
-  "BlogDB::DB::Result::PendingBlogTagMap",
-  { "foreign.tag_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
+__PACKAGE__->belongs_to(
+  "tag",
+  "BlogDB::DB::Result::Tag",
+  { id => "tag_id" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
 
 # Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-11-21 05:50:00
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3Y3M0cdE/p2E54iYWV0nJQ
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+UAP0nhOyxxBAhXrW6c/xg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

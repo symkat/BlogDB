@@ -183,6 +183,21 @@ __PACKAGE__->add_unique_constraint("pending_blog_url_key", ["url"]);
 
 =head1 RELATIONS
 
+=head2 pending_blog_tag_maps
+
+Type: has_many
+
+Related object: L<BlogDB::DB::Result::PendingBlogTagMap>
+
+=cut
+
+__PACKAGE__->has_many(
+  "pending_blog_tag_maps",
+  "BlogDB::DB::Result::PendingBlogTagMap",
+  { "foreign.blog_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 submitter
 
 Type: belongs_to
@@ -204,8 +219,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-11-20 18:43:08
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Nmw2JISUfm8bGD434BTYaw
+# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-11-21 05:50:00
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8bolOwz93fFR3o6V2hJ5rA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

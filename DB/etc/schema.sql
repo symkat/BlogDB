@@ -111,6 +111,15 @@ CREATE TABLE blog_tag_map (
     created_at                  timestamptz     not null default current_timestamp
 );
 
+-- Map between tags <-> blogs so we can get a listing of tags for a blog, or a listing
+-- of blogs for a tag.
+CREATE TABLE pending_blog_tag_map (
+    id                          serial          PRIMARY KEY,
+    blog_id                     int             not null references pending_blog(id),
+    tag_id                      int             not null references tag(id),
+    created_at                  timestamptz     not null default current_timestamp
+);
+
 -- When a user adds a tag, it's added to the pending table, and can be voted on,
 -- approved, or deleted.
 CREATE TABLE pending_tag (
