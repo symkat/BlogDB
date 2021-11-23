@@ -2,9 +2,26 @@ package BlogDB::Web::Controller::Blog;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
 use Data::UUID;
 
-sub get_blog ($c) {
+sub _slug_to_id ($self, $slug) {
+    # /:id
+    # /:id-
+    # /:id-anything
+
+    if ( $slug =~ /^(\d+)-?$/ ) {
+        return $1;
+    } elsif ( $slug =~ /^(\d+)-.+$/ ) {
+        return $1;
+    }
+
+    return "";
+}
+
+sub get_view_blog ($c) {
     $c->set_template( 'blog/index' );
 
+    my $blog_id = $c->_slug_to_id($c->param('slug'));
+    my $blog    = $c->stash->{blog} = $c->db->resultset('Blog')->find( $blog_id );
+    
 }
 
 sub post_follow ($c) {
@@ -145,7 +162,32 @@ sub post_edit_new_blog ($c) {
 
     # Send the user back to the standard GET path.
     $c->redirect_to( $c->url_for( 'edit_new_blog', id => $blog->id ) );
+}
 
+sub post_publish_new_blog ($c) {
+    my $pb = $c->db->resultset('PendingBlog')->find( $c->param('id') );
+
+    my $blog = $c->db->resultset('Blog')->create({
+        title    => $pb->title, 
+        url      => $pb->url,
+        img_url  => $pb->img_url,
+        rss_url  => $pb->rss_url,
+        tagline  => $pb->tagline,
+        about    => $pb->about,
+        is_adult => $pb->is_adult,
+    });
+
+    my @tags = $pb->search_related('pending_blog_tag_maps')->all;
+
+    foreach my $tag ( @tags ) {
+        $blog->create_related('blog_tag_maps', {
+            tag_id => $tag->tag_id,
+        });
+        $tag->delete;
+    }
+    $pb->delete;
+
+    $c->redirect_to( $c->url_for( 'view_blog', slug => $blog->id ) );
 }
 
 1;

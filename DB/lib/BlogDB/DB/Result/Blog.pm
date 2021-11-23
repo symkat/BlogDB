@@ -227,4 +227,18 @@ __PACKAGE__->has_many(
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+sub tags {
+    my ( $self ) = @_;
+
+    return [map {
+      +{
+        id       => $_->tag->id,
+        name     => $_->tag->name,
+        is_adult => $_->tag->is_adult,
+      }
+    } $self->search_related('blog_tag_maps', {})->all];
+}
+
+
 1;

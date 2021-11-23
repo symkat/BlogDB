@@ -3,19 +3,18 @@
 %%  }
 
 %% override panel -> {
+    <h3>[% $blog_obj.title %]</h3>
 
 
-
-
-
-
-
-
-
-
-
-
-    <h3>[% $blog_url %]</h3>
+        <div class="row" style="margin: 2em">
+            <div class="col">
+                <form method="post" action="[% $c.url_for( 'do_publish_new_blog', id => $blog_obj.id ) %]">
+                    <button type="submit" class="btn btn-primary float-end">Publish Blog</button>
+                </form>
+            </div>
+            <div class="col">
+            </div>
+        </div>
 
         <div class="row">
             <!-- Error Handling On LHS -->
@@ -35,7 +34,7 @@
 
         <div class="row">
             <div class="col">
-                <form method="post" action="[% $c.url_for( 'do_edit_new_blog' ) %]">
+                <form method="post" action="[% $c.url_for( 'do_edit_new_blog', id => $blog_obj.id ) %]">
 
 %%                  include 'default/_/form/input.tx' { type => 'text', name => 'title',
 %%                      title => 'Title',

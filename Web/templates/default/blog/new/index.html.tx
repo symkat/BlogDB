@@ -5,7 +5,17 @@
 %% override panel -> {
 
 %%      for $blogs -> $blog {
-            [% $blog.title %]
+            <div class="card" style="width: 20rem;">
+                <img src="/blog_screenshots/[% $blog.id %].jpg" class="card-img-top" alt="Screenshot">
+                <div class="card-body">
+                    <h5 class="card-title">[% $blog.title %]</h5>
+                    <p class="card-text">
+                        [% $blog.tagline %] <br />
+                        About: [% $blog.about %]<br/>
+                    </p>
+                    <a href="[% $c.url_for( 'edit_new_blog', id => $blog.id ) %]" class="btn btn-primary">View Edit Page</a>
+                </div>
+              </div>
 
 %%      }
 

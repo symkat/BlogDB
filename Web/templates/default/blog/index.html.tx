@@ -1,0 +1,74 @@
+%%  cascade default::_::layout { title => $blog.title,
+%%      
+%%  }
+
+%% override panel -> {
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Blogs</a></li>
+            <li class="breadcrumb-item active" aria-current="page">[% $blog.url %]</li>
+        </ol>
+    </nav>
+
+
+    <div class="row">
+        <div class="col">
+            <h1>[% $blog.title %]</h1>
+            <h3>[% $blog.tagline %]</h3>
+        </div>
+        <div class="col">
+            <form method="post" action="[% $c.url_for( 'do_follow_blog' ) %]">
+                <input type="hidden" name="blog_id" value="[% $blog.id %]" />
+                <button type="submit" class="btn btn-primary float-end">Follow Blog</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <p>[% $blog.about %]</p>
+            <p>X readers follow</p>
+
+%%          for $blog.tags -> $tag {
+            [% $tag.name %]
+%%          }
+
+        </div>
+        <div class="col">
+            <img width="80%" src="/blog_screenshots/[% $blog.id %].jpg">
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Reviews</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Latest Posts</a>
+        </li>
+    </ul>
+
+    <form method="post" action="[% $c.url_for( 'do_review_blog' ) %]">
+        <input type="hidden" name="blog_id" value="[% $blog.id %]">
+
+        <textarea name="comment" rows="4">[% $form_comment %]</textarea>
+
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" value="1" name="review_pos" id="review_pos" [% $form_review_pos ? " checked " : "" %]>
+            <label class="form-check-label" for="review_pos">This is a positive review.  I recommend this blog.</label>
+        </div>
+
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" value="1" name="review_neg" id="review_neg" [% $form_review_neg ? " checked " : "" %]>
+            <label class="form-check-label" for="review_neg">This is a negative review.  I dislike this blog.</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary float-end">Post Review</button>
+    </form>
+
+    <div class="row" style="height: 20em;"></div>
+
+
+%% }
