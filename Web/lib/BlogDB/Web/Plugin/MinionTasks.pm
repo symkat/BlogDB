@@ -68,7 +68,7 @@ sub register ( $self, $app, $config ) {
         $blog->update;
     });
     
-    $app->minion->add_task(populate_blog_entires => sub ( $job, $blog_id, $type ) {
+    $app->minion->add_task(populate_blog_entries => sub ( $job, $blog_id, $type ) {
         my $rs1 = $type eq 'pending' ? 'PendingBlog'          : 'Blog';
         my $rs2 = $type eq 'pending' ? 'PendingBlogEntry'     : 'BlogEntry';
         my $rs3 = $type eq 'pending' ? 'pending_blog_entries' : 'blog_entries';

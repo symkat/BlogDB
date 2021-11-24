@@ -37,7 +37,7 @@
 
         </div>
         <div class="col">
-            <img width="80%" src="/blog_screenshots/[% $blog.id %].jpg">
+            <img width="80%" src="[% $blog.img_url %]">
         </div>
     </div>
 
@@ -67,6 +67,13 @@
 
         <button type="submit" class="btn btn-primary float-end">Post Review</button>
     </form>
+
+    <div class="row">
+        <h2>Recent Posts</h2>
+%%      for $blog.posts -> $post {
+        <a href="[% $post.url %]" target="_blank" alt="[% $post.date %]">[% $post.title %]</a>
+%%      }
+    </div>
 
     <div class="row" style="height: 20em;"></div>
 

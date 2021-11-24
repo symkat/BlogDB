@@ -3,12 +3,12 @@
 %%  }
 
 %% override panel -> {
-    <h3>[% $blog_obj.title %]</h3>
+    <h3>[% $blog.title %]</h3>
 
 
         <div class="row" style="margin: 2em">
             <div class="col">
-                <form method="post" action="[% $c.url_for( 'do_publish_new_blog', id => $blog_obj.id ) %]">
+                <form method="post" action="[% $c.url_for( 'do_publish_new_blog', id => $blog.id ) %]">
                     <button type="submit" class="btn btn-primary float-end">Publish Blog</button>
                 </form>
             </div>
@@ -34,7 +34,7 @@
 
         <div class="row">
             <div class="col">
-                <form method="post" action="[% $c.url_for( 'do_edit_new_blog', id => $blog_obj.id ) %]">
+                <form method="post" action="[% $c.url_for( 'do_edit_new_blog', id => $blog.id ) %]">
 
 %%                  include 'default/_/form/input.tx' { type => 'text', name => 'title',
 %%                      title => 'Title',
@@ -83,8 +83,14 @@
                 </form>
             </div>
             <div class="col">
-                <img width="80%" src="[% $blog_obj.img_url %]">
+                <img width="80%" src="[% $blog.img_url %]">
             </div>
+        </div>
+        <div class="row">
+            <h2>Recent Posts</h2>
+%%      for $blog.posts -> $post {
+            <a href="[% $post.url %]" target="_blank" alt="[% $post.date %]">[% $post.title %]</a>
+%%      }
         </div>
 
 %%  } 

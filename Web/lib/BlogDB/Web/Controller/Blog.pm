@@ -89,7 +89,6 @@ sub post_new_blog ($c) {
         ),
     });
 
-    $c->minion->enqueue( populate_blog_entires    => [ $blog->id, 'pending' ]);
     $c->minion->enqueue( populate_blog_screenshot => [ $blog->id, 'pending' ]);
 
     $c->redirect_to( $c->url_for( 'edit_new_blog', id => $blog->id ) );
@@ -98,8 +97,8 @@ sub post_new_blog ($c) {
 sub get_edit_new_blog ($c) {
     $c->set_template( 'blog/new/item' );
 
-    my $blog_id = $c->stash->{blog_id}  = $c->param('id');
-    my $blog    = $c->stash->{blog_obj} = $c->db->resultset('PendingBlog')->find( $blog_id );
+    my $blog_id = $c->stash->{blog_id} = $c->param('id');
+    my $blog    = $c->stash->{blog}    = $c->db->resultset('PendingBlog')->find( $blog_id );
     
 
     # Populate the form with the current values.
@@ -120,12 +119,21 @@ sub get_edit_new_blog ($c) {
         };
 
     }
+
+    foreach my $post ( $blog->search_related('pending_blog_entries')->all ) {
+        push @{$c->stash->{posts}}, {
+            title => $post->title,
+            url   => $post->url,
+            date  => $post->publish_date,
+        };
+    }
+
 }
 
 sub post_edit_new_blog ($c) {
 
-    my $blog_id = $c->stash->{blog_id}  = $c->param('id');
-    my $blog    = $c->stash->{blog_obj} = $c->db->resultset('PendingBlog')->find( $blog_id );
+    my $blog_id = $c->stash->{blog_id} = $c->param('id');
+    my $blog    = $c->stash->{blog}    = $c->db->resultset('PendingBlog')->find( $blog_id );
 
 
     # TODO: This section should be guarded by checking that the user
@@ -146,6 +154,9 @@ sub post_edit_new_blog ($c) {
     $blog->is_adult( $c->stash->{form_adult}   );
 
     $blog->update;
+
+    # Get Posts from RSS Feed.
+    $c->minion->enqueue( populate_blog_entries => [ $blog->id, 'pending' ]);
 
     # Remove all tags, then add the tags we have set.
     $blog->search_related('pending_blog_tag_maps')->delete;
@@ -173,16 +184,16 @@ sub post_publish_new_blog ($c) {
     });
 
     my @tags = $pb->search_related('pending_blog_tag_maps')->all;
-
     foreach my $tag ( @tags ) {
         $blog->create_related('blog_tag_maps', {
             tag_id => $tag->tag_id,
         });
         $tag->delete;
     }
+    $pb->search_related('pending_blog_entries')->delete;
     $pb->delete;
 
-    $c->minion->enqueue( populate_blog_entires    => [ $blog->id, 'prod' ]);
+    $c->minion->enqueue( populate_blog_entries    => [ $blog->id, 'prod' ]);
     $c->minion->enqueue( populate_blog_screenshot => [ $blog->id, 'prod' ]);
 
     $c->redirect_to( $c->url_for( 'view_blog', slug => $blog->slug ) );

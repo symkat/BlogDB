@@ -237,6 +237,39 @@ __PACKAGE__->belongs_to(
 # Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-11-24 04:45:56
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:F4GsyDnhsW34Ywl+BCrVEw
 
+sub tags {
+    my ( $self ) = @_;
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+    return [map {
+      +{
+        id       => $_->tag->id,
+        name     => $_->tag->name,
+        is_adult => $_->tag->is_adult,
+      }
+    } $self->search_related('pending_blog_tag_maps', {})->all];
+}
+
+sub slug {
+    my ( $self ) = @_;
+
+    my $title = $self->title ? $self->title : $self->url;
+
+    $title = lc($title);
+    s/[^a-zA-Z0-9]/_/g, s/[_]+/_/g, s/^_//, s/_$// for $title;
+
+    return sprintf( "%d-%s", $self->id, $title );
+}
+
+sub posts {
+  my ( $self ) = @_;
+
+  return [ map {
+    +{
+      title => $_->title,
+      url   => $_->url,
+      date  => $_->publish_date,
+    }
+  } $self->search_related( 'pending_blog_entries')->all ];
+}
+
 1;

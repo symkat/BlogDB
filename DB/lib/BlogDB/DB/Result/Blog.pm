@@ -251,5 +251,17 @@ sub slug {
     return sprintf( "%d-%s", $self->id, $title );
 }
 
+sub posts {
+  my ( $self ) = @_;
+
+  return [ map {
+    +{
+      title => $_->title,
+      url   => $_->url,
+      date  => $_->publish_date,
+    }
+  } $self->search_related( 'blog_entries')->all ];
+}
+
 
 1;
