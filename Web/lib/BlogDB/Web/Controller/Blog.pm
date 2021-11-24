@@ -19,9 +19,63 @@ sub _slug_to_id ($self, $slug) {
 sub get_view_blog ($c) {
     $c->set_template( 'blog/index' );
 
-    my $blog_id = $c->_slug_to_id($c->param('slug'));
-    my $blog    = $c->stash->{blog} = $c->db->resultset('Blog')->find( $blog_id );
+    my $blog = $c->stash->{blog} = $c->db->resultset('Blog')->find(
+        $c->_slug_to_id($c->param('slug'))
+    );
+}
+
+sub get_edit_blog ($c) {
+    $c->set_template( 'blog/edit' );
+
+    my $blog = $c->stash->{blog} = $c->db->resultset('Blog')->find(
+        $c->_slug_to_id($c->param('slug'))
+    );
+
+    $c->stash->{form_title}   = $blog->title; 
+    $c->stash->{form_url}     = $blog->url;  
+    $c->stash->{form_rss_url} = $blog->rss_url;
+    $c->stash->{form_tagline} = $blog->tagline;
+    $c->stash->{form_about}   = $blog->about;
+    $c->stash->{form_adult}   = $blog->is_adult;
     
+    # I should add this to the PendingBlog/Blog models - all tags + checked / not checked status.
+    my %seen = map { $_->tag_id => 1 } $blog->search_related('blog_tag_maps', {})->all;
+    foreach my $tag ( $c->db->resultset('Tag')->all ) {
+        push @{$c->stash->{tags}}, {
+            id      => $tag->id,
+            name    => $tag->name,
+            checked => $seen{$tag->id} ? 1 : 0, 
+        };
+
+    }
+}
+
+sub post_edit_blog ($c) {
+    $c->set_template( 'blog/edit' );
+
+    my $blog = $c->stash->{blog} = $c->db->resultset('Blog')->find(
+        $c->_slug_to_id($c->param('slug'))
+    );
+
+    $blog->title   ( $c->param('title')             );
+    $blog->url     ( $c->param('url')               );
+    $blog->rss_url ( $c->param('rss_url')           );
+    $blog->tagline ( $c->param('tagline')           );
+    $blog->about   ( $c->param('about')             );
+    $blog->is_adult( $c->param('is_adult') ? 1 : 0  );
+
+    $blog->update;
+
+    # Remove all tags, then add the tags we have set.
+    $blog->search_related('blog_tag_maps')->delete;
+    foreach my $tag_id ( @{$c->every_param('tags')}) {
+        $blog->create_related('blog_tag_maps', {
+            tag_id => $tag_id,
+        });
+    }
+
+    # Send the user back to the standard GET path.
+    $c->redirect_to( $c->url_for( 'view_blog', slug => $blog->slug ) );
 }
 
 sub post_follow ($c) {
@@ -117,8 +171,8 @@ sub get_edit_new_blog ($c) {
             name    => $tag->name,
             checked => $seen{$tag->id} ? 1 : 0, 
         };
-
     }
+
 
     foreach my $post ( $blog->search_related('pending_blog_entries')->all ) {
         push @{$c->stash->{posts}}, {
@@ -127,7 +181,6 @@ sub get_edit_new_blog ($c) {
             date  => $post->publish_date,
         };
     }
-
 }
 
 sub post_edit_new_blog ($c) {

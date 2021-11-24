@@ -96,6 +96,8 @@ sub startup ($self) {
     $r->post   ( '/blog/publish/:id'      )->to( 'Blog#post_publish_new_blog')->name( 'do_publish_new_blog' ); # Publish (PendingBlog -> Blog.)
 
     $r->get    ( '/blog/v/:slug'          )->to( 'Blog#get_view_blog'        )->name( 'view_blog');
+    $r->get    ( '/blog/e/:slug'          )->to( 'Blog#get_edit_blog'        )->name( 'edit_blog');
+    $r->post   ( '/blog/e/:slug'          )->to( 'Blog#post_edit_blog'       )->name( 'do_edit_blog');
 
 #    $r->get    ( '/view/:id/:name'        )->to( 'Blog#get_blog'      )->name( 'blog'             ); # View A Specific Blog.
 #
