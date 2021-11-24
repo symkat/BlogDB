@@ -187,7 +187,10 @@ sub post_publish_new_blog ($c) {
     }
     $pb->delete;
 
-    $c->redirect_to( $c->url_for( 'view_blog', slug => $blog->id ) );
+    $c->minion->enqueue( populate_blog_entires    => [ $blog->id ]);
+    $c->minion->enqueue( populate_blog_screenshot => [ $blog->id ]);
+
+    $c->redirect_to( $c->url_for( 'view_blog', slug => $blog->slug ) );
 }
 
 1;
