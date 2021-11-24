@@ -93,6 +93,16 @@ CREATE TABLE blog_entry (
     description                 text            ,
     created_at                  timestamptz     not null default current_timestamp
 );
+-- RSS Reader will create these for the blogs.
+CREATE TABLE pending_blog_entry (
+    id                          serial          PRIMARY KEY,
+    blog_id                     int             not null references pending_blog(id),
+    title                       text            not null,
+    url                         text            not null,
+    publish_date                timestamptz     not null,
+    description                 text            ,
+    created_at                  timestamptz     not null default current_timestamp
+);
 
 -- Tags that are approved.
 CREATE TABLE tag (
