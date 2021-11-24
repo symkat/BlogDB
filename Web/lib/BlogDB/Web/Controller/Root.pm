@@ -6,6 +6,8 @@ use Data::UUID;
 sub get_homepage ($c) {
     $c->set_template( 'index' );
 
+    push @{$c->stash->{blogs}}, $c->db->resultset('Blog')->all;
+
 }
 
 sub get_register ($c) {
