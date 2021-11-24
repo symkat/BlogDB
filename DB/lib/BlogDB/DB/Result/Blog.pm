@@ -240,5 +240,16 @@ sub tags {
     } $self->search_related('blog_tag_maps', {})->all];
 }
 
+sub slug {
+    my ( $self ) = @_;
+
+    my $title = $self->title ? $self->title : $self->url;
+
+    $title = lc($title);
+    s/[^a-zA-Z0-9]/_/g, s/[_]+/_/g, s/^_//, s/_$// for $title;
+
+    return sprintf( "%d-%s", $self->id, $title );
+}
+
 
 1;
