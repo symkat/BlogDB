@@ -48,15 +48,9 @@ sub register ( $self, $app, $config ) {
         return [ @items ];
     });
 
-    $app->minion->add_task(download_screenshot => sub ( $job, $blog_url, $blog_id ) {
-        $screenshot->store_screenshot( 
-            url      => $blog_url, 
-            out_file => $job->app->config->{ws_screenshot}->{datadir} . "$blog_id.jpg",
-        );
-    });
-    
-    $app->minion->add_task(populate_blog_screenshot => sub ( $job, $blog_id ) {
-        my $blog = $job->app->db->resultset('Blog')->find( $blog_id );
+    $app->minion->add_task(populate_blog_screenshot => sub ( $job, $blog_id, $type ) {
+        my $rs1 = $type eq 'pending' ? 'PendingBlog' : 'Blog';
+        my $blog = $job->app->db->resultset($rs1)->find( $blog_id );
 
         make_path( $job->app->static->paths->[0] . '/screenshots/' );
         my $out  = tempfile( 
@@ -74,27 +68,30 @@ sub register ( $self, $app, $config ) {
         $blog->update;
     });
     
-    $app->minion->add_task(populate_blog_entires => sub ( $job, $blog_id ) {
-        my $blog = $job->app->db->resultset('Blog')->find( $blog_id );
+    $app->minion->add_task(populate_blog_entires => sub ( $job, $blog_id, $type ) {
+        my $rs1 = $type eq 'pending' ? 'PendingBlog'          : 'Blog';
+        my $rs2 = $type eq 'pending' ? 'PendingBlogEntry'     : 'BlogEntry';
+        my $rs3 = $type eq 'pending' ? 'pending_blog_entries' : 'blog_entries';
+
+        my $blog = $job->app->db->resultset($rs1)->find( $blog_id );
 
         return unless $blog->rss_url;
 
         my $entries = $job->app->extract_feed( $blog->rss_url );
 
         foreach my $entry ( @{$entries} ) {
-            my $entry_count = $job->app->db->resultset('BlogEntry')->search({
+            my $entry_count = $job->app->db->resultset($rs2)->search({
                 url => $entry->{link},
             })->count;
 
             next if $entry_count >= 1;
 
-            $blog->create_related( 'blog_entries', {
+            $blog->create_related( $rs3, {
                 title        => $entry->{title},
                 url          => $entry->{link},
                 publish_date => $entry->{date},
             });
         } 
-
     });
 }
 

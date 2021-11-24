@@ -63,8 +63,6 @@ sub get_new_blogs ($c) {
 }
 
 sub post_new_blog ($c) {
-
-
     $c->set_template( 'index' );
 
     my $blog_url = $c->stash->{form_url} = $c->param('url');
@@ -91,10 +89,10 @@ sub post_new_blog ($c) {
         ),
     });
 
-    $c->minion->enqueue( download_screenshot => [ $blog->url, $blog->id ] );
+    $c->minion->enqueue( populate_blog_entires    => [ $blog->id, 'pending' ]);
+    $c->minion->enqueue( populate_blog_screenshot => [ $blog->id, 'pending' ]);
 
-
-    #$c->redirect_to( $c->url_for( 'do_blog_edit', id => $blog->id, title => 'new' ) );
+    $c->redirect_to( $c->url_for( 'edit_new_blog', id => $blog->id ) );
 }
 
 sub get_edit_new_blog ($c) {
@@ -108,7 +106,6 @@ sub get_edit_new_blog ($c) {
 
     $c->stash->{form_title}   = $blog->title; 
     $c->stash->{form_url}     = $blog->url;  
-    $c->stash->{form_img_url} = $blog->img_url;
     $c->stash->{form_rss_url} = $blog->rss_url;
     $c->stash->{form_tagline} = $blog->tagline;
     $c->stash->{form_about}   = $blog->about;
@@ -136,7 +133,6 @@ sub post_edit_new_blog ($c) {
     #       such permissions as allows editing it.
     $c->stash->{form_title}   = $c->param("title"); 
     $c->stash->{form_url}     = $c->param("url");  
-    $c->stash->{form_img_url} = $c->param("img_url");
     $c->stash->{form_rss_url} = $c->param("rss_url");
     $c->stash->{form_tagline} = $c->param("tagline");
     $c->stash->{form_about}   = $c->param("about");
@@ -144,7 +140,6 @@ sub post_edit_new_blog ($c) {
 
     $blog->title   ( $c->stash->{form_title}   );
     $blog->url     ( $c->stash->{form_url}     );
-    $blog->img_url ( $c->stash->{form_img_url} );
     $blog->rss_url ( $c->stash->{form_rss_url} );
     $blog->tagline ( $c->stash->{form_tagline} );
     $blog->about   ( $c->stash->{form_about}   );
@@ -187,8 +182,8 @@ sub post_publish_new_blog ($c) {
     }
     $pb->delete;
 
-    $c->minion->enqueue( populate_blog_entires    => [ $blog->id ]);
-    $c->minion->enqueue( populate_blog_screenshot => [ $blog->id ]);
+    $c->minion->enqueue( populate_blog_entires    => [ $blog->id, 'prod' ]);
+    $c->minion->enqueue( populate_blog_screenshot => [ $blog->id, 'prod' ]);
 
     $c->redirect_to( $c->url_for( 'view_blog', slug => $blog->slug ) );
 }

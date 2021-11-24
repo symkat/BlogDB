@@ -72,12 +72,6 @@
 %%                      value => $form_url,
 %%                  };
 
-%%                  include 'default/_/form/input.tx' { type => 'text', name => 'img_url',
-%%                      title => 'Homepage Image URL',
-%%                      help  => 'A URL to a screenshot of the homepage.',
-%%                      value => $form_img_url,
-%%                  };
-
 %%                  include 'default/_/form/input.tx' { type => 'text', name => 'rss_url',
 %%                      title => 'RSS URL',
 %%                      help  => 'A URL to an RSS feed for the blog.',
@@ -89,7 +83,7 @@
                 </form>
             </div>
             <div class="col">
-                <img width="80%" src="/blog_screenshots/[% $blog_id %].jpg">
+                <img width="80%" src="[% $blog_obj.img_url %]">
             </div>
         </div>
 
