@@ -19,10 +19,19 @@
             <h3>[% $blog.tagline %]</h3>
         </div>
         <div class="col">
-            <form method="post" action="[% $c.url_for( 'do_follow_blog' ) %]">
-                <input type="hidden" name="blog_id" value="[% $blog.id %]" />
-                <button type="submit" class="btn btn-primary float-end">Follow Blog</button>
-            </form>
+%%          if ( $person ) {
+%%              if ( $person.is_following_blog($blog.id) ) {
+                    <form method="post" action="[% $c.url_for( 'do_unfollow_blog' ) %]">
+                        <input type="hidden" name="blog_id" value="[% $blog.id %]" />
+                        <button type="submit" class="btn btn-primary float-end">Unfollow Blog</button>
+                    </form>
+%%              } else {
+                    <form method="post" action="[% $c.url_for( 'do_follow_blog' ) %]">
+                        <input type="hidden" name="blog_id" value="[% $blog.id %]" />
+                        <button type="submit" class="btn btn-primary float-end">Follow Blog</button>
+                    </form>
+%%              }
+%%          }
         </div>
     </div>
 

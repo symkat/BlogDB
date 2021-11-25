@@ -78,13 +78,28 @@ sub post_edit_blog ($c) {
     $c->redirect_to( $c->url_for( 'view_blog', slug => $blog->slug ) );
 }
 
-sub post_follow ($c) {
-    $c->set_template( 'blog/index' );
+sub post_blog_follow ($c) {
+    my $blog = $c->db->resultset('Blog')->find($c->param('blog_id'));
 
+    # TODO: Throw an error if we don't have {person}->id, or $blog.
+    $c->stash->{person}->create_related('person_follow_blog_maps', {
+        blog_id => $blog->id,
+    });
+
+    $c->redirect_to( $c->url_for( 'view_blog', slug => $blog->slug ) );
 }
 
-sub post_unfollow ($c) {
-    $c->set_template( 'blog/index' );
+sub post_blog_unfollow ($c) {
+    my $blog = $c->db->resultset('Blog')->find($c->param('blog_id'));
+
+    # TODO: Throw an error if we don't have {person}->id, or $blog.
+
+    $c->db->resultset('PersonFollowBlogMap')->search({
+        person_id => $c->stash->{person}->id,
+        blog_id   => $blog->id,
+    })->delete;
+    
+    $c->redirect_to( $c->url_for( 'view_blog', slug => $blog->slug ) );
 
 }
 

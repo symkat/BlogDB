@@ -99,6 +99,8 @@ sub startup ($self) {
     $r->get    ( '/blog/e/:slug'          )->to( 'Blog#get_edit_blog'        )->name( 'edit_blog');
     $r->post   ( '/blog/e/:slug'          )->to( 'Blog#post_edit_blog'       )->name( 'do_edit_blog');
 
+    $r->post   ( '/blog/follow'           )->to( 'Blog#post_blog_follow'       )->name( 'do_follow_blog'  );
+    $r->post   ( '/blog/unfollow'         )->to( 'Blog#post_blog_unfollow'     )->name( 'do_unfollow_blog');
 #    $r->get    ( '/view/:id/:name'        )->to( 'Blog#get_blog'      )->name( 'blog'             ); # View A Specific Blog.
 #
 #    $auth->get ( '/blog/new'              )->to( 'Blog#get_new_blogs'  )->name( 'new_blogs'        ); # List pending blogs for approval.

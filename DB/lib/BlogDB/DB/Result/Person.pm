@@ -323,4 +323,16 @@ sub get_settings {
     return $return;
 }
 
+sub is_following_blog {
+    my ( $self, $blog_id ) = @_;
+
+    return 0 unless $blog_id;
+
+    my $count = $self->search_related('person_follow_blog_maps', {
+        blog_id => $blog_id,
+    })->count;
+
+    return $count >= 1 ? 1 : 0;
+}
+
 1;
