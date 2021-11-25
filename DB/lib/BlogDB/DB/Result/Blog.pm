@@ -263,5 +263,20 @@ sub posts {
   } $self->search_related( 'blog_entries')->all ];
 }
 
+sub get_comments {
+    my ( $self ) = @_;
+
+    return [ $self->search_related('messages', { parent_id => undef, })->all ];
+}
+
+sub get_votes {
+    my ( $self ) = @_;
+
+    return {
+        total => $self->search_related( 'messages', { parent_id => undef})->sum('vote'),
+        pos   => $self->search_related( 'messages', { parent_id => undef, vote => 1})->count,
+        neg   => $self->search_related( 'messages', { parent_id => undef, vote => -1})->count,
+    };
+}
 
 1;

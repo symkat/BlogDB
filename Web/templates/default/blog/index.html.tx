@@ -59,19 +59,19 @@
         </li>
     </ul>
 
-    <form method="post" action="[% $c.url_for( 'do_review_blog' ) %]">
-        <input type="hidden" name="blog_id" value="[% $blog.id %]">
+    <form method="post" action="[% $c.url_for( 'do_blog_comment' ) %]">
+        <input type="hidden" name="blog_id"    value="[% $blog.id %]">
 
-        <textarea name="comment" rows="4">[% $form_comment %]</textarea>
+        <textarea id="message" name="message" rows="4">[% $form_message %]</textarea>
 
         <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" value="1" name="review_pos" id="review_pos" [% $form_review_pos ? " checked " : "" %]>
-            <label class="form-check-label" for="review_pos">This is a positive review.  I recommend this blog.</label>
+            <input class="form-check-input" type="checkbox" value="1" name="rev_pos" id="rev_pos" [% $form_rev_pos ? " checked " : "" %]>
+            <label class="form-check-label" for="rev_pos">This is a positive review.  I recommend this blog.</label>
         </div>
 
         <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" value="1" name="review_neg" id="review_neg" [% $form_review_neg ? " checked " : "" %]>
-            <label class="form-check-label" for="review_neg">This is a negative review.  I dislike this blog.</label>
+            <input class="form-check-input" type="checkbox" value="1" name="rev_neg" id="rev_neg" [% $form_rev_neg ? " checked " : "" %]>
+            <label class="form-check-label" for="rev_neg">This is a negative review.  I dislike this blog.</label>
         </div>
 
         <button type="submit" class="btn btn-primary float-end">Post Review</button>
@@ -85,6 +85,10 @@
     </div>
 
     <div class="row" style="height: 20em;"></div>
+
+%%  for $blog.get_comments -> $comment {  
+%%      include "/default/blog/_comment.tx" { comment => $comment };
+%%  }
 
 
 %% }

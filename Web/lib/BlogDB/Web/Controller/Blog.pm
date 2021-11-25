@@ -100,7 +100,26 @@ sub post_blog_unfollow ($c) {
     })->delete;
     
     $c->redirect_to( $c->url_for( 'view_blog', slug => $blog->slug ) );
+}
 
+sub post_blog_comment ($c) {
+    my $blog_id = $c->stash->{form_blog_id} = $c->param('blog_id');
+    my $message = $c->stash->{form_message} = $c->param('message');
+    my $rev_pos = $c->stash->{form_rev_pos} = $c->param('rev_pos');
+    my $rev_neg = $c->stash->{form_rev_neg} = $c->param('rev_neg');
+    my $parent  = $c->stash->{form_parent}  = $c->param('parent_id');
+
+    # pos = 1, neg = -1, otherwise 0
+    my $vote = $rev_pos ? 1 : ( $rev_neg ? -1 : 0 );
+
+    $c->stash->{person}->create_related('messages', {
+        blog_id   => $blog_id,
+        content   => $message,
+        parent_id => $parent,
+        vote      => $vote,
+    });
+    
+    $c->redirect_to( $c->url_for( 'view_blog', slug => $blog_id ) );
 }
 
 sub get_settings ($c) {

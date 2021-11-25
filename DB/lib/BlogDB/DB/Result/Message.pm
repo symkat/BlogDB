@@ -197,4 +197,28 @@ __PACKAGE__->belongs_to(
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+sub get_children {
+    my ( $self ) = @_;
+
+    return [ $self->result_source->schema->resultset('Message')->search({
+        parent_id => $self->id,
+    })->all ];
+}
+
+sub time_ago {
+    my ( $self ) = @_;
+
+    my $delta = time - $self->created_at->epoch;
+
+    return "less than a minute ago"           if $delta < 60;           # 1 Minute
+    return "about a minute ago"               if $delta < 120;          # 2 minute
+    return int($delta / 60) . " minutes ago"  if $delta < 45 * 60;      # 45 minutes
+    return "about an hour ago"                if $delta < 60 * 60 * 2;  # 2 hours
+    return int($delta / 3600) . " hours ago"  if $delta < 60 * 60 * 18; # 18 hours
+    return "about an day ago"                 if $delta < 60 * 60 * 36; # 36 Hours
+    return int($delta / (3600*24)) . " days ago";
+}
+
+
 1;

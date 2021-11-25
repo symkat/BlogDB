@@ -101,6 +101,10 @@ sub startup ($self) {
 
     $r->post   ( '/blog/follow'           )->to( 'Blog#post_blog_follow'       )->name( 'do_follow_blog'  );
     $r->post   ( '/blog/unfollow'         )->to( 'Blog#post_blog_unfollow'     )->name( 'do_unfollow_blog');
+
+    $r->post   ( '/blog/comment'          )->to( 'Blog#post_blog_comment'      )->name( 'do_blog_comment');
+    
+#    $r->post   ( '/blog/unfollow'         )->to( 'Blog#post_blog_unfollow'     )->name( 'do_unfollow_blog');
 #    $r->get    ( '/view/:id/:name'        )->to( 'Blog#get_blog'      )->name( 'blog'             ); # View A Specific Blog.
 #
 #    $auth->get ( '/blog/new'              )->to( 'Blog#get_new_blogs'  )->name( 'new_blogs'        ); # List pending blogs for approval.

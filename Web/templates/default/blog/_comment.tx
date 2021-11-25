@@ -1,0 +1,31 @@
+<div class="card my-4">
+    <div class="card-body">
+        <div class="">
+            <a href="#">u/[% $comment.author.username %]</a>
+            <small><span title="[% $comment.created_at %]">[% $comment.time_ago %]</span></small>
+        </div>
+        <div class="pt-4">
+%%              $comment.content
+        </div>
+        <br />
+          <a class="card-link" data-bs-toggle="collapse" href="#replyForm[% $comment.id %]" role="button" aria-expanded="false" aria-controls="replyForm[% $comment.id %]">[Reply]</a>
+        <a href="#" class="card-link">[Permlink]</a>
+        <div id="replyForm[% $comment.id %]" class="row mx-2 my-4 collapse">
+            <form method="POST" action="[% $c.url_for( 'do_blog_comment' ) %]">
+                <input type="hidden" name="parent_id"     value="[% $comment.id %]" />
+                <input type="hidden" name="blog_id"       value="[% $blog.id %]" />
+                <div class="mb-3">
+                    <label for="message" class="form-label">Post a Reply</label>
+                    <textarea class="form-control" name="message" id="message" rows="3"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary float-end">Post Message</button>
+            </form>
+        </div>
+    </div>
+%%      for $comment.get_children -> $child_comment {  
+    <div style="margin-left: 2em">
+%%              include "/default/blog/_comment.tx" { comment => $child_comment };
+    </div>
+%%      }
+</div>
