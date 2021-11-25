@@ -335,4 +335,12 @@ sub is_following_blog {
     return $count >= 1 ? 1 : 0;
 }
 
+sub get_followed_blogs {
+    my ( $self ) = @_;
+
+    return [ map {
+        $_->blog
+    } $self->search_related('person_follow_blog_maps')->all ];
+}
+
 1;

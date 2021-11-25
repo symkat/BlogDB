@@ -16,6 +16,28 @@
         </form>
     </div>
 
+    <h2>Followed Blogs</h2>
+    <div class="row row-cols-3 row-cols-md-3 g-4">
+%%      for $person.get_followed_blogs -> $blog {
+        <div class="col">
+            <div class="card" style="width: 24rem;">
+                <img src="[% $blog.img_url %]" class="card-img-top" alt="Screenshot">
+                <div class="card-body">
+                    <h5 class="card-title">[% $blog.title %]</h5>
+                    <p class="card-text">
+                        [% $blog.tagline %] <br />
+                        About: [% $blog.about %]<br/>
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <a href="[% $c.url_for( 'view_blog', slug => $blog.slug ) %]" class="btn btn-primary">View Blog</a>
+                </div>
+            </div>
+        </div>
+%%      }
+    </div>
+
+    <h2>All Blogs</h2>
     <div class="row row-cols-3 row-cols-md-3 g-4">
 %%      for $blogs -> $blog {
         <div class="col">
