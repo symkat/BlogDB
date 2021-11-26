@@ -2,22 +2,22 @@ package BlogDB::Web::Test;
 use Import::Into;
 use Test::More;
 use Test::Deep;
-use Test::Mojo;
+use Test::Mojo::BlogDB;
 use Test::Postgresql58;
 
 push our @ISA, qw( Exporter );
-push our @EXPORT, qw(  );
+push our @EXPORT, qw( $run_code );
 
 sub import {
     shift->export_to_level(1);
     my $target = caller;
 
-    Mojo::Base->import::into($target, '-strict');
-    warnings  ->import::into($target);
-    strict    ->import::into($target);
-    Test::More->import::into($target);
-    Test::Deep->import::into($target);
-    Test::Mojo->import::into($target);
+    Mojo::Base        ->import::into($target, '-strict', '-signatures' );
+    warnings          ->import::into($target);
+    strict            ->import::into($target);
+    Test::More        ->import::into($target);
+    Test::Deep        ->import::into($target);
+    Test::Mojo::BlogDB->import::into($target);
 }
 
 our $pgsql = Test::Postgresql58->new()
