@@ -28,6 +28,8 @@ package Test::Mojo::BlogDB;
 #   ->dump_stash(1)
 #   ->status_is(200);
 #
+use warnings;
+use strict;
 use parent 'Test::Mojo';
 use Data::Dumper;
 use Test::Deep;
@@ -65,6 +67,8 @@ sub dump_stash {
         warn Dumper $t->stash;
         return $t;
     }
+
+    my $ds;
 
     foreach my $key ( keys %{$t->stash}) {
         next if $key eq 'controller';
