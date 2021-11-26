@@ -6,7 +6,7 @@
 
 %%      for $blogs -> $blog {
             <div class="card" style="width: 20rem;">
-                <img src="/blog_screenshots/[% $blog.id %].jpg" class="card-img-top" alt="Screenshot">
+                <img src="[% $blog.img_url %]" class="card-img-top" alt="Screenshot">
                 <div class="card-body">
                     <h5 class="card-title">[% $blog.title %]</h5>
                     <p class="card-text">
