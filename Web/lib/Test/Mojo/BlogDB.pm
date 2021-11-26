@@ -89,6 +89,8 @@ sub stash_has {
     my ( $t, $expect, $desc ) = @_;
 
     cmp_deeply( $t->stash, superhashof($expect), $desc);
+
+    return $t;
 }
 
 1;
