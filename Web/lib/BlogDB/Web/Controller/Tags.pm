@@ -20,7 +20,7 @@ sub post_suggest_tag ($c) {
     my $is_adult = $c->stash->{form_adult} = $c->param('is_adult');
 
     push @{$c->stash->{errors}}, "Tag names must start with a letter, and may only contain letters and numbers."
-        unless $tag_name =~ m/^[a-zA-Z][a-zA-Z0-9]+$/;
+        unless $tag_name =~ m/^[a-zA-Z][a-zA-Z0-9_]+$/;
 
     return 0 if $c->stash->{errors};
 
@@ -85,6 +85,9 @@ sub post_delete_tag ($c) {
     my $tag_name = $c->stash->{form_tag} = $c->param('tag');
     
     my $tag = $c->db->resultset('PendingTag')->search({ name => $tag_name })->first;
+    
+    push @{$c->stash->{errors}}, "Not authorized."
+        unless $c->stash->{person}->setting( 'can_manage_tags');
 
     push @{$c->stash->{errors}}, "No such tag?"
         unless $tag;
@@ -115,6 +118,9 @@ sub post_approve_tag ($c) {
     my $tag_name = $c->stash->{form_tag} = $c->param('tag');
 
     my $tag = $c->db->resultset('PendingTag')->search({ name => $tag_name })->first;
+
+    push @{$c->stash->{errors}}, "Not authorized."
+        unless $c->stash->{person}->setting( 'can_manage_tags');
 
     push @{$c->stash->{errors}}, "No such tag?"
         unless $tag;

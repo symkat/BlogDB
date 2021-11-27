@@ -131,5 +131,11 @@ __PACKAGE__->has_many(
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Lax0e42Qy8BWDsYZfKmZyw
 
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+sub vote_score {
+  my ( $self ) = @_;
+
+  my $score = $self->search_related('tag_votes', { vote => 1 } )->count || 0;
+
+  return $score;
+}
 1;

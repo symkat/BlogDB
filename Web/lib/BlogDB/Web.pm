@@ -61,6 +61,8 @@ sub startup ($self) {
 
         return 1 if $c->stash->{person};
 
+        push @{$c->stash->{errors}}, 'Login required.';
+
         $c->redirect_to( $c->url_for( 'homepage' ) );
         return undef;
     });
