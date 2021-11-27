@@ -33,6 +33,7 @@ use strict;
 use parent 'Test::Mojo';
 use Data::Dumper;
 use Test::Deep;
+use Test::More;
 
 sub new {
     my $class = shift;
@@ -75,6 +76,7 @@ sub dump_stash {
         next if $key eq 'action';
         next if $key eq 'cb';
         next if $key eq 'template';
+        next if $key eq 'person';
         next if $key =~ m|^mojo\.|;
 
         $ds->{$key} = $t->stash->{$key};
@@ -91,6 +93,53 @@ sub stash_has {
     cmp_deeply( $t->stash, superhashof($expect), $desc);
 
     return $t;
+}
+
+sub create_user {
+    my ( $t, $settings  ) = @_;
+
+    my $user = join( '', map({ ('a'..'z','A'..'Z')[int rand 52] } ( 0 .. 8)) );
+    $t->post_ok( '/register', form => { 
+        username => $user,
+        email    => "$user\@blogdb.com",
+        password => $user,
+        confirm  => $user,
+    })
+    ->get_ok( '/')
+    ->code_block( sub {
+        is(shift->stash->{person}->username, $user, "Created test user $user");
+    })
+    ->code_block( sub {
+        # Now we're just gonna add whatever settings from $settings.
+        my $t = shift;
+        foreach my $key ( keys %{$settings || {}}) {
+            $t->stash->{person}->setting( $key, $settings->{$key});
+        }
+    });
+
+    return $t;
+}
+
+sub create_tag {
+    my ( $t, $tag, $is_adult ) = @_;
+
+    $t->post_ok( '/tags/suggest', form => {
+        tag => $tag,
+        ($is_adult ? ( is_adult => 1 ) : ( ) ),
+    });
+
+    return $t;
+}
+
+# Storage stack for a run, convenience for stashing stuff.
+sub _ss {
+    my ( $t, $data_stack ) = @_;
+    $t->{data_stack} = $data_stack;
+    return $t;
+}
+
+sub _sg {
+    return shift->{data_stack};
 }
 
 1;
