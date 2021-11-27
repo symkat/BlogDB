@@ -221,37 +221,66 @@ sub post_edit_new_blog ($c) {
 
     my $blog_id = $c->stash->{blog_id} = $c->param('id');
     my $blog    = $c->stash->{blog}    = $c->db->resultset('PendingBlog')->find( $blog_id );
+    my $person  = $c->stash->{person};
 
+    # We can continue if:
+    # 1: We have an edit_token, and it matches the blog->edit_token.
+    # 2: We are a logged in user and we are the blog->submitter.
+    # 3: We are a logged in user and we have can_manage_blogs
+    my $passes_tests = 0;
 
-    # TODO: This section should be guarded by checking that the user
-    #       has a UUID that allows editing, or is a logged in user with
-    #       such permissions as allows editing it.
-    $c->stash->{form_title}   = $c->param("title"); 
-    $c->stash->{form_url}     = $c->param("url");  
-    $c->stash->{form_rss_url} = $c->param("rss_url");
-    $c->stash->{form_tagline} = $c->param("tagline");
-    $c->stash->{form_about}   = $c->param("about");
-    $c->stash->{form_adult}   = $c->param("is_adult") ? 1 : 0;
-
-    $blog->title   ( $c->stash->{form_title}   );
-    $blog->url     ( $c->stash->{form_url}     );
-    $blog->rss_url ( $c->stash->{form_rss_url} );
-    $blog->tagline ( $c->stash->{form_tagline} );
-    $blog->about   ( $c->stash->{form_about}   );
-    $blog->is_adult( $c->stash->{form_adult}   );
-
-    $blog->update;
-
-    # Get Posts from RSS Feed.
-    $c->minion->enqueue( populate_blog_entries => [ $blog->id, 'pending' ]);
-
-    # Remove all tags, then add the tags we have set.
-    $blog->search_related('pending_blog_tag_maps')->delete;
-    foreach my $tag_id ( @{$c->every_param('tags')}) {
-        $blog->create_related('pending_blog_tag_maps', {
-            tag_id => $tag_id,
-        });
+    if ( $person && $person->setting('can_manage_blogs') ) {
+        $passes_tests = 1;
+        push @{$c->stash->{authorization}}, 'setting:can_manage_blogs';
     }
+    if ( $blog->submitter_id && $blog->submitter_id == $person->id ) {
+        push @{$c->stash->{authorization}}, 'submitter';
+        $passes_tests = 1;
+    }
+    if ( $blog->edit_token && $c->session->{edit_token} ) {
+        if ( $blog->edit_token eq $c->session->{edit_token} ) {
+            push @{$c->stash->{authorization}}, 'token';
+            $passes_tests = 1;
+        }
+    }
+
+    # Throw out any users who don't meet the conditions set out
+    # above.
+    if ( not $passes_tests ) {
+        push @{$c->stash->{errors}}, 'Not Authorized.';
+        $c->redirect_to( $c->url_for( 'homepage' ) );
+        return 0;
+    }
+
+    # Do the update in a transaction.
+    $c->db->storage->schema->txn_do( sub {
+        $c->stash->{form_title}   = $c->param("title"); 
+        $c->stash->{form_url}     = $c->param("url");  
+        $c->stash->{form_rss_url} = $c->param("rss_url");
+        $c->stash->{form_tagline} = $c->param("tagline");
+        $c->stash->{form_about}   = $c->param("about");
+        $c->stash->{form_adult}   = $c->param("is_adult") ? 1 : 0;
+
+        $blog->title   ( $c->stash->{form_title}   );
+        $blog->url     ( $c->stash->{form_url}     );
+        $blog->rss_url ( $c->stash->{form_rss_url} );
+        $blog->tagline ( $c->stash->{form_tagline} );
+        $blog->about   ( $c->stash->{form_about}   );
+        $blog->is_adult( $c->stash->{form_adult}   );
+
+        $blog->update;
+
+        # Get Posts from RSS Feed.
+        $c->minion->enqueue( populate_blog_entries => [ $blog->id, 'pending' ]);
+
+        # Remove all tags, then add the tags we have set.
+        $blog->search_related('pending_blog_tag_maps')->delete;
+        foreach my $tag_id ( @{$c->every_param('tags')}) {
+            $blog->create_related('pending_blog_tag_maps', {
+                tag_id => $tag_id,
+            });
+        }
+    });
 
     # Send the user back to the standard GET path.
     $c->redirect_to( $c->url_for( 'edit_new_blog', id => $blog->id ) );
