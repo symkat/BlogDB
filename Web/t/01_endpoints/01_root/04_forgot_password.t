@@ -41,6 +41,4 @@ $t->post_ok( '/forgot', form => { username => 'fred' })
         $t->stash( { %{$t->stash}, token => $reset_token } )
     });
 
-warn "I have reset token: " . $t->stash->{token} . "\n";
-
 done_testing();
