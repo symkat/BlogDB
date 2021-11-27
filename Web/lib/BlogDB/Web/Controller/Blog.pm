@@ -289,6 +289,17 @@ sub post_edit_new_blog ($c) {
 sub post_publish_new_blog ($c) {
     my $pb = $c->db->resultset('PendingBlog')->find( $c->param('id') );
 
+    push @{$c->stash->{errors}}, 'No such blog id.'
+        unless $pb;
+
+    push @{$c->stash->{errors}}, 'Not Authorized.'
+        unless $c->stash->{person}->setting( 'can_manage_blogs' );
+
+    if ( @{$c->stash->{errors} || []} ) {
+        $c->redirect_to( $c->url_for( 'homepage' ) );
+        return 0;
+    }
+
     my $blog = $c->db->resultset('Blog')->create({
         title    => $pb->title, 
         url      => $pb->url,

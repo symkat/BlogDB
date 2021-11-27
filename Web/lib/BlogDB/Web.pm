@@ -95,7 +95,7 @@ sub startup ($self) {
     $r->post   ( '/blog/new'              )->to( 'Blog#post_new_blog'        )->name( 'do_new_blog'         ); # Create a new blog.
     $r->get    ( '/blog/new/:id'          )->to( 'Blog#get_edit_new_blog'    )->name( 'edit_new_blog'       ); # Show edit a new blog page.
     $r->post   ( '/blog/new/:id'          )->to( 'Blog#post_edit_new_blog'   )->name( 'do_edit_new_blog'    ); # Update a new blog.
-    $r->post   ( '/blog/publish/:id'      )->to( 'Blog#post_publish_new_blog')->name( 'do_publish_new_blog' ); # Publish (PendingBlog -> Blog.)
+    $auth->post( '/blog/publish/:id'      )->to( 'Blog#post_publish_new_blog')->name( 'do_publish_new_blog' ); # Publish (PendingBlog -> Blog.)
 
     $r->get    ( '/blog/v/:slug'          )->to( 'Blog#get_view_blog'        )->name( 'view_blog');
     $r->get    ( '/blog/e/:slug'          )->to( 'Blog#get_edit_blog'        )->name( 'edit_blog');
