@@ -26,6 +26,14 @@ sub get_view_blog ($c) {
 
 sub get_edit_blog ($c) {
     $c->set_template( 'blog/edit' );
+    
+    push @{$c->stash->{errors}}, 'Not Authorized.'
+        unless $c->stash->{person}->setting( 'can_manage_blogs' );
+
+    if ( @{$c->stash->{errors} || []} ) {
+        $c->redirect_to( $c->url_for( 'homepage' ) );
+        return 0;
+    }
 
     my $blog = $c->stash->{blog} = $c->db->resultset('Blog')->find(
         $c->_slug_to_id($c->param('slug'))
@@ -53,6 +61,13 @@ sub get_edit_blog ($c) {
 sub post_edit_blog ($c) {
     $c->set_template( 'blog/edit' );
 
+    push @{$c->stash->{errors}}, 'Not Authorized.'
+        unless $c->stash->{person}->setting( 'can_manage_blogs' );
+
+    if ( @{$c->stash->{errors} || []} ) {
+        $c->redirect_to( $c->url_for( 'homepage' ) );
+        return 0;
+    }
     my $blog = $c->stash->{blog} = $c->db->resultset('Blog')->find(
         $c->_slug_to_id($c->param('slug'))
     );
@@ -112,13 +127,14 @@ sub post_blog_comment ($c) {
     # pos = 1, neg = -1, otherwise 0
     my $vote = $rev_pos ? 1 : ( $rev_neg ? -1 : 0 );
 
-    $c->stash->{person}->create_related('messages', {
+    my $obj = $c->stash->{person}->create_related('messages', {
         blog_id   => $blog_id,
         content   => $message,
         parent_id => $parent,
         vote      => $vote,
     });
     
+    $c->stash->{created_comment_id} = $obj->id;
     $c->redirect_to( $c->url_for( 'view_blog', slug => $blog_id ) );
 }
 
