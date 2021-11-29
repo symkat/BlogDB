@@ -28,47 +28,39 @@
 
 
 
-                        <!-- Comments section-->
-                        <section class="mb-5">
-                            <div class="card bg-light">
-                                <div class="card-body">
-                                    <!-- Comment form-->
-                                    <form class="mb-4"><textarea class="form-control" rows="3" placeholder="Join the discussion and leave a comment!"></textarea></form>
-                                    <!-- Comment with nested comments-->
-                                    <div class="d-flex mb-4">
-                                        <!-- Parent comment-->
-                                        <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-                                        <div class="ms-3">
-                                            <div class="fw-bold">Commenter Name</div>
-                                            If you're going to lead a space frontier, it has to be government; it'll never be private enterprise. Because the space frontier is dangerous, and it's expensive, and it has unquantified risks.
-                                            <!-- Child comment 1-->
-                                            <div class="d-flex mt-4">
-                                                <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-                                                <div class="ms-3">
-                                                    <div class="fw-bold">Commenter Name</div>
-                                                    And under those conditions, you cannot establish a capital-market evaluation of that enterprise. You can't get investors.
-                                                </div>
-                                            </div>
-                                            <!-- Child comment 2-->
-                                            <div class="d-flex mt-4">
-                                                <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-                                                <div class="ms-3">
-                                                    <div class="fw-bold">Commenter Name</div>
-                                                    When you put money directly to a problem, it makes a good headline.
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Single comment-->
-                                    <div class="d-flex">
-                                        <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-                                        <div class="ms-3">
-                                            <div class="fw-bold">Commenter Name</div>
-                                            When I look at the universe and all the ways the universe wants to kill us, I find it hard to reconcile that with statements of beneficence.
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
+    <!-- Start Comments / Review section-->
+    <section class="mb-5">
+        <div class="card bg-light">
+            <div class="card-body">
+                <!-- Begin Review / Root Comment Form-->
+                <div class="row">
+                    <form method="post" action="[% $c.url_for( 'do_blog_comment' ) %]">
+                        <input type="hidden" name="blog_id"    value="[% $blog.id %]">
+
+                        <textarea class="form-control" id="message" name="message" rows="4" placeholder="What do you think of [% $blog.title %]?">[% $form_message %]</textarea>
+
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" value="1" name="rev_pos" id="rev_pos" [% $form_rev_pos ? " checked " : "" %]>
+                            <label class="form-check-label" for="rev_pos">This is a positive review.  I recommend this blog.</label>
+                        </div>
+
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" value="1" name="rev_neg" id="rev_neg" [% $form_rev_neg ? " checked " : "" %]>
+                            <label class="form-check-label" for="rev_neg">This is a negative review.  I dislike this blog.</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary float-end">Post Review</button>
+                    </form>
+                </div>
+                <!-- End Review / Root Comment Form-->
+                <div class="row">
+%%              for $blog.get_comments -> $comment {  
+%%                  include "/simple/blog/_comment.tx" { comment => $comment };
+%%              }
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Comments / Review section-->
 
 %% }
