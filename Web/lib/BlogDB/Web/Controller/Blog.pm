@@ -17,7 +17,7 @@ sub _slug_to_id ($self, $slug) {
 }
 
 sub get_view_blog ($c) {
-    $c->set_template( 'blog/index' );
+    $c->set_template( 'blog/item' );
 
     my $blog = $c->stash->{blog} = $c->db->resultset('Blog')->find(
         $c->_slug_to_id($c->param('slug'))

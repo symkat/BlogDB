@@ -1,0 +1,11 @@
+<!-- _/_blog_card.tx start -->
+<div class="card mb-4">
+    <a href="[% $c.url_for( 'view_blog', 'slug' => $blog.slug ) %]"><img class="card-img-top" src="[% $blog.img_url %]" alt="..." /></a>
+    <div class="card-body">
+        <div class="small text-muted">Last Updated: January 1, 2021</div>
+        <h2 class="card-title h4">[% $blog.title %]</h2>
+        <p class="card-text">[% $blog.tagline %]</p>
+        <a class="btn btn-primary" href="[% $c.url_for( 'view_blog', 'slug',$blog.slug ) %]">View Entry →</a>
+    </div>
+</div>
+<!-- _/_blog_card.tx end -->

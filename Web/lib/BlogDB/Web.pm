@@ -32,7 +32,13 @@ sub startup ($self) {
         $c->stash->{template} = sprintf( "%s/%s", $c->config->{template_dir}, $name );
     });
 
+    # Make _public/ in the template dir be on the static path resolution.
+    push @{$self->static->paths}, 'templates/' . $self->config->{template_dir} . "/_public";
+
     $self->plugin( 'BlogDB::Web::Plugin::MinionTasks');
+
+    # Add the templates/$name/_public/ directory to the static paths,
+    # if the directory exists.
 
     # Get the router.
     my $router = $self->routes;

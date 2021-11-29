@@ -7,6 +7,8 @@ sub get_homepage ($c) {
     $c->set_template( 'index' );
 
     push @{$c->stash->{blogs}}, $c->db->resultset('Blog')->all;
+    push @{$c->stash->{tags_a}},  grep  { $_->id % 2 == 1 } $c->db->resultset('Tag')->all;
+    push @{$c->stash->{tags_b}},  grep  { $_->id % 2 == 0 } $c->db->resultset('Tag')->all;
 
 }
 

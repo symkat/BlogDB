@@ -1,0 +1,29 @@
+%%  cascade simple::_::layout { title => 'Homepage',
+%%      
+%%  }
+
+%%  override panel -> {
+%%      for $blogs -> $blog {
+%%          if ( $~blog.is_first ) {
+%%              # <!-- Large Display -->
+%%              include 'simple/_/_blog_card.tx' { blog => $blog };
+%%          } else {
+%%              # <!-- Small Displays -->
+%%              if ( $~blog.index % 2 == 1 ) {
+                    <div class="row">
+                        <div class="col-lg-6">
+%%                          include 'simple/_/_blog_card.tx' { blog => $blog };
+                        </div>
+%%                  if ( $~blog.is_last ) { # Display 
+%%                      # <!-- If we end the loop here, we need to close <row>.-->
+                        </div>
+%%                  }
+%%              } else {    
+                        <div class="col-lg-6">
+%%                      include 'simple/_/_blog_card.tx' { blog => $blog };
+                        </div>
+                    </div>
+%%             }
+%%          }
+%%      }
+%% }
