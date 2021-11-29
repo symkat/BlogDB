@@ -279,4 +279,16 @@ sub get_votes {
     };
 }
 
+# This is pretty janky.
+sub formatted_about {
+  my ( $self ) = @_;
+
+  my $str;
+
+  foreach my $paragraph ( split /\n/, $self->about ) {
+    $str .= '<p class="fs-5 mb-4">' . $paragraph . "</p>\n";
+  }
+
+  return $str;
+}
 1;
