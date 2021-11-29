@@ -21,3 +21,14 @@
       desc: "Grab a shell to psql"
       shell:
         - docker exec -ti blogdb-db psql -U blogdb blogdb
+- name: build
+  desc: "Build packages or containers."
+  children:
+    - name: mojo
+      desc: "Build the mojolicious base container."
+      shell:
+        - docker build . -t symkat/mojo -f .docker/mojo.dockerfile
+    - name: blogdb
+      desc: "Build the blogdb app container."
+      shell:
+        - docker build . -t symkat/blogdb -f .docker/blogdb.dockerfile
