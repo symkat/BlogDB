@@ -1,0 +1,8 @@
+- name: web
+  desc: "Start the devel web server with plx"
+  shell:
+    - plx morbo ./script/blogdb_web 
+- name: minion
+  desc: "Start the devel minion worker with plx"
+  shell:
+    - plx ./script/blogdb_web minion worker
