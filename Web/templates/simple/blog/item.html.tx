@@ -28,7 +28,7 @@
             <h1 class="fw-bolder mb-1"><a class="text-decoration-none link-dark" href="[% $blog.url %]">[% $blog.title %]</a></h1>
             <div class="text-muted fst-italic mb-2">[% $blog.tagline %]</div>
 %%          for $blog.tags -> $tag {
-                <a class="badge bg-secondary text-decoration-none link-light" href="#!">#[% $tag.name %]</a>
+                <a class="badge bg-secondary text-decoration-none link-light" href="[% $c.url_for('homepage').query( 'tag', $tag.name ) %]">#[% $tag.name %]</a>
 %%          } 
         </header>
         <section class="mb-5">

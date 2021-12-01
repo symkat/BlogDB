@@ -6,7 +6,17 @@ use Data::UUID;
 sub get_homepage ($c) {
     $c->set_template( 'index' );
 
-    push @{$c->stash->{blogs}}, $c->db->resultset('Blog')->all;
+    # Find blogs by tag.
+    if ( $c->param('tag') ) {
+        my $tag = $c->db->resultset('Tag')->search({ name => $c->param('tag') })->first;
+        if ( $tag ) {
+            push @{$c->stash->{blogs}}, map { $_->blog }
+                $tag->search_related('blog_tag_maps')->all;
+        }
+    }
+
+    push @{$c->stash->{blogs}}, $c->db->resultset('Blog')->all
+        unless exists $c->stash->{blogs};
     push @{$c->stash->{tags_a}},  grep  { $_->id % 2 == 1 } $c->db->resultset('Tag')->all;
     push @{$c->stash->{tags_b}},  grep  { $_->id % 2 == 0 } $c->db->resultset('Tag')->all;
 
