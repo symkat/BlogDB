@@ -24,6 +24,14 @@ sub get_view_blog ($c) {
     );
 }
 
+sub get_view_random_blog ( $c ) {
+    my @blogs = $c->db->resultset('Blog')->all;
+
+    my $blog = $blogs[int rand scalar @blogs];
+
+    $c->redirect_to( $c->url_for( 'view_blog', { slug => $blog->slug }));
+}
+
 sub get_edit_blog ($c) {
     $c->set_template( 'blog/edit' );
     

@@ -111,6 +111,7 @@ sub startup ($self) {
     $r->post   ( '/blog/new/:id'          )->to( 'Blog#post_edit_new_blog'   )->name( 'do_edit_new_blog'    ); # Update a new blog.
     $auth->post( '/blog/publish/:id'      )->to( 'Blog#post_publish_new_blog')->name( 'do_publish_new_blog' ); # Publish (PendingBlog -> Blog.)
     $r->get    ( '/blog/v/:slug'          )->to( 'Blog#get_view_blog'        )->name( 'view_blog'           ); # View specific blog
+    $r->get    ( '/blog/r'                )->to( 'Blog#get_view_random_blog' )->name( 'view_random_blog'    ); # 302 redirect the user to a random blog.
     $auth->get ( '/blog/e/:slug'          )->to( 'Blog#get_edit_blog'        )->name( 'edit_blog'           ); # View edit page
     $auth->post( '/blog/e/:slug'          )->to( 'Blog#post_edit_blog'       )->name( 'do_edit_blog'        ); # Post edits to blog
     $auth->post( '/blog/follow'           )->to( 'Blog#post_blog_follow'     )->name( 'do_follow_blog'      ); # Follow a blog
