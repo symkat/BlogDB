@@ -10,6 +10,18 @@
     </div>
 %%  }
 
+%%  override sidebar_card -> {
+%%      if ( $person_permissions.can_manage_blogs ) { 
+        <div class="card mb-4">
+            <div class="card-header">Actions</div>
+            <div class="card-body">
+                <a href="[% $c.url_for( 'edit_blog' => 'slug', $blog.slug ) %]" class="btn btn-primary float-end">Edit Blog</a>
+            </div>
+        </div>
+%%      }
+%% }
+
+
 %%  override panel -> {
     <article>
         <header class="mb-4">

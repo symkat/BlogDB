@@ -295,7 +295,8 @@ sub setting {
 
         return $value;
     } else {
-        my $result = $self->find_related('person_settings', { name => $setting });
+        return undef unless $setting;
+        my $result = $self->find_related('person_settings', { 'name' => $setting });
         return undef unless $result;
         return $self->_get_setting_value($result);
     }

@@ -1,0 +1,114 @@
+%%  cascade simple::_::layout { title => 'Edit ' ~ $blog.url,
+%%      hide_welcome_screen => 1,
+%%  }
+
+%%  override sidebar_card -> {
+%%      if ( $person_permissions.can_manage_blogs ) { 
+        <div class="card mb-4">
+            <div class="card-header">Actions</div>
+            <div class="card-body">
+                <form method="post" action="[% $c.url_for( 'do_publish_new_blog', id => $blog.id ) %]">
+                    <button type="submit" class="btn btn-primary float-end">Publish Blog</button>
+                </form>
+            </div>
+        </div>
+%%      }
+%% }
+
+%%  override blog_homepage_section -> {
+    <div class="card mb-4">
+        <div class="card-header">Screenshot</div>
+        <div class="card-body">
+            <a target="_blank" title="Visit [% $blog.title %]" href="[% $blog.url %]">
+                <figure class="mb-4"><img class="img-fluid rounded" src="[% $blog.img_url %]" alt="..." /></figure>
+            </a>
+        </div>
+    </div>
+%%  }
+
+%% override panel -> {
+    <h3>[% $blog.title %]</h3>
+
+
+        <div class="row" style="margin: 2em">
+            <div class="col">
+            </div>
+            <div class="col">
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Error Handling On LHS -->
+            <div class="col">
+%%              if ( $errors.size() ) { 
+                <div style="margin-top: 2em" class="alert alert-danger" role="alert">
+                    There were errors with your request that could not be resolved:
+                    <ul>
+%%                  for $errors -> $error {
+                        <li>[% $error %]</li>
+%%                  } 
+                    </ul>
+                </div>
+%%              } 
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <form method="post" action="[% $c.url_for( 'do_edit_new_blog', slug => $blog.slug ) %]">
+
+%%                  include 'simple/_/form/input.tx' { type => 'text', name => 'title',
+%%                      title => 'Title',
+%%                      help  => 'The title of the blog',
+%%                      value => $form_title,
+%%                  };
+
+%%                  include 'simple/_/form/input.tx' { type => 'text', name => 'tagline',
+%%                      title => 'Tagline',
+%%                      help  => 'The tagline of the blog.',
+%%                      value => $form_tagline,
+%%                  };
+
+                    <textarea name="about" rows="4">[% $form_about %]</textarea>
+            
+
+                    <br />
+
+                <div class="form-check form-switch">
+
+                    <input class="form-check-input" type="checkbox" value="1" name="is_adult" id="is_adult" [% $form_adult ? " checked " : "" %]>
+                    <label class="form-check-label" for="is_adult">Adult Content</label>
+                </div>
+
+%%                  for $tags -> $tag {
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="[% $tag.id %]" name="tags" id="tag_[% $tag.id %]" [% $tag.checked ? " checked " : "" %]>
+                        <label class="form-check-label" for="tag_[% $tag.id %]">[% $tag.name %]</label>
+                    </div>
+%%                  }
+                    <br />
+%%                  include 'simple/_/form/input.tx' { type => 'text', name => 'url',
+%%                      title => 'Homepage URL',
+%%                      help  => 'The url of the blog',
+%%                      value => $form_url,
+%%                  };
+
+%%                  include 'simple/_/form/input.tx' { type => 'text', name => 'rss_url',
+%%                      title => 'RSS URL',
+%%                      help  => 'A URL to an RSS feed for the blog.',
+%%                      value => $form_rss_url,
+%%                  };
+
+                    <button type="submit" class="btn btn-primary float-end">Update Blog Data</button>
+
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <h2>Recent Posts</h2>
+%%      for $blog.posts -> $post {
+            <a href="[% $post.url %]" target="_blank" alt="[% $post.date %]">[% $post.title %]</a>
+%%      }
+        </div>
+
+%%  } 

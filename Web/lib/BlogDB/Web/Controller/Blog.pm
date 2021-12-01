@@ -199,7 +199,7 @@ sub post_new_blog ($c) {
 }
 
 sub get_edit_new_blog ($c) {
-    $c->set_template( 'blog/new/item' );
+    $c->set_template( 'blog/new/edit' );
 
     my $blog_id = $c->stash->{blog_id} = $c->param('id');
     my $blog    = $c->stash->{blog}    = $c->db->resultset('PendingBlog')->find( $blog_id );

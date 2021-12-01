@@ -87,6 +87,9 @@
 
 %%                  block blog_homepage_section -> {}
 
+%%                  block sidebar_card -> {}
+
+
                     <!-- Search widget-->
                     <div class="card mb-4">
                         <div class="card-header">Suggest a blog to be added</div>
