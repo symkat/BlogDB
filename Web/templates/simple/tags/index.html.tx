@@ -1,0 +1,115 @@
+%%  cascade simple::_::layout { title => 'Tags Manager',
+%%      hide_welcome_screen => 1,
+%%  }
+
+%%  override panel -> {
+
+%%              if ( $errors.size() ) { 
+                <div style="margin-top: 2em" class="alert alert-danger" role="alert">
+                    There were errors with your request that could not be resolved:
+                    <ul>
+%%                  for $errors -> $error {
+                        <li>[% $error %]</li>
+%%                  } 
+                    </ul>
+                </div>
+%%              } 
+
+%%      if ( $person ) {
+        <!-- Add New Tag Section -->
+        <div class="d-flex justify-content-center">
+            <form method="post" class="row row-cols-lg-auto align-items-center" action="[% $c.url_for( 'do_suggest_tag' ) %]">
+                <div class="col-12">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">#</span>
+                    <input type="text" class="form-control" placeholder="newTag" name="tag" value="[% $form_tag %]" aria-label="New Tag Name" aria-describedby="basic-addon1">
+                </div>
+                </div>
+                <div class="col-12">
+                <div class="form-check form-switch">
+                    <input name="is_adult" [% $form_adult ? " checked" : "" %] class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">Adult Tag?</label>
+                </div>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary float-end">Suggest</button>
+                </div>
+            </form>
+        </div>
+%%      }
+
+%%     if ( $success ) {
+        <div class="d-flex justify-content-center">
+            <p>Suggested #[% $tag_name %]!</p>
+        </div>
+%%     } 
+
+
+        <!-- List Pending Tags -->
+        <h2>Pending Tags</h2> 
+%%      for $pending_tags -> $tag {
+            <p style="display: inline">
+
+%%          if ( $person and not $person_permissions.can_manage_tags ) {
+            <!-- Upvote Button -->
+            <form style="display: inline" method="post" action="[% $c.url_for( 'do_vote_tag') %]">
+                <input type="hidden" name="tag" value="[% $tag.name %]">
+                <button type="submit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"/>
+                    </svg>
+                </button>
+            </form>
+%%          }
+%%          if ( $person and $person_permissions.can_manage_tags ) {
+            <!-- Approve Button -->
+            <form style="display: inline" method="post" action="[% $c.url_for( 'do_approve_tag') %]">
+                <input type="hidden" name="tag" value="[% $tag.name %]">
+                <button type="submit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                    </svg>
+                </button>
+            </form>
+%%          }
+                #[% $tag.name %]
+
+                <small>([% $tag.search_related('tag_votes', { vote => 1 } ).count() %] Votes)</small>
+
+%%              if ( $tag.is_adult ) { 
+                <small>Adult</small>
+%%              }
+
+            
+%%          if ( $person and $person_permissions.can_manage_tags ) {
+            <!-- Delete Button -->
+            <form style="display: inline" method="post" action="[% $c.url_for( 'do_delete_tag') %]">
+                <input type="hidden" name="tag" value="[% $tag.name %]">
+                <button type="submit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                    </svg>
+                </button>
+            </form>
+%%          }
+            
+        </p>
+
+%%      }
+
+
+        <!-- List Tags -->
+
+<h2>Existing Tags</h2> 
+%%      for $tags -> $tag {
+        <p>
+            #[% $tag.name %] 
+            [% $tag.is_adult ? mark_raw("<small>(Adult)</small>") : "" %]
+        </p>
+
+%%      }
+
+
+%%  }

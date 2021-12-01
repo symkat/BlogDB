@@ -5,7 +5,11 @@
         <div class="small text-muted">Last Updated: January 1, 2021</div>
         <h2 class="card-title h4">[% $blog.title %]</h2>
         <p class="card-text">[% $blog.tagline %]</p>
+%%      if ( $is_pending_link ) {
+        <a class="btn btn-primary" href="[% $c.url_for( 'edit_new_blog', 'id', $blog.id ) %]">Edit/Publish Blog →</a>
+%%      } else {
         <a class="btn btn-primary" href="[% $c.url_for( 'view_blog', 'slug',$blog.slug ) %]">View Entry →</a>
+%%      }
     </div>
 </div>
 <!-- _/_blog_card.tx end -->

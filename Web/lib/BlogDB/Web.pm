@@ -55,6 +55,14 @@ sub startup ($self) {
 
             if ( $person && $person->is_enabled ) {
                 $c->stash->{person} = $person;
+                $c->stash->{person_permissions} = {
+                    can_manage_tags   => $person->setting('can_manage_tags'),
+                    can_manage_blogss => $person->setting('can_manage_blogs'),
+                };
+                $c->stash->{person_permissions}->{can_manage_tags}   &&= 1;
+                $c->stash->{person_permissions}->{can_manage_tags}   ||= 0;
+                $c->stash->{person_permissions}->{can_manage_blogs}  &&= 1;
+                $c->stash->{person_permissions}->{can_manage_blogs}  ||= 0;
                 return 1;
             }
         }

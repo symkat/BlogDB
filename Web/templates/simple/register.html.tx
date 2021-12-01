@@ -1,0 +1,55 @@
+%%  cascade simple::_::layout { title => 'Register',
+%%      
+%%  }
+
+
+
+%% override panel -> {
+        <div class="row">
+            <!-- Error Handling On LHS -->
+            <div class="col">
+%%              if ( $errors.size() ) { 
+                <div style="margin-top: 2em" class="alert alert-danger" role="alert">
+                    There were errors with your request that could not be resolved:
+                    <ul>
+%%                  for $errors -> $error {
+                        <li>[% $error %]</li>
+%%                  } 
+                    </ul>
+                </div>
+%%              } 
+            </div>
+
+            <!-- Registration Handling On RHS -->
+            <div class="col">
+                <form method="post" action="[% $c.url_for( 'do_register' ) %]">
+%%                  include 'simple/_/form/input.tx' { type => 'text', name => 'username',
+%%                      title => 'Username',
+%%                      help  => 'Your username is unique, friends can follow you at /user/YourName',
+%%                      value => $form_username,
+%%                  };
+
+%%                  include 'simple/_/form/input.tx' { type => 'email', name => 'email',
+%%                      title => 'Email address',
+%%                      help  => 'You will need to confirm your email address to post comments.',
+%%                      value => $form_email,
+%%                  };
+
+%%                  include 'simple/_/form/input.tx' { type => 'password', name => 'password',
+%%                      title => 'Password',
+%%                      help  => 'You will need your password to login.',
+%%                      value => $form_password,
+%%                  };
+
+%%                  include 'simple/_/form/input.tx' { type => 'password', name => 'confirm',
+%%                      title => 'Confirm password',
+%%                      help  => mark_raw('Just to <strike>annoy you</strike> be sure it is correct.'),
+%%                      value => $form_confirm,
+%%                  };
+
+                    <button type="submit" class="btn btn-primary float-end">Register</button>
+
+                </form>
+            </div>
+        </div>
+%%  } 
