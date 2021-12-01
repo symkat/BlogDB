@@ -1,16 +1,18 @@
 <!-- Begin simple/blog/_comment.tx -->
 <div class="card my-4">
     <div class="card-body">
+        <a name="comment_[% $comment.id %]"></a>
         <div class="">
-            <a href="#">u/[% $comment.author.username %]</a>
+            <a href="#">[% $comment.author.username %]</a>
             <small><span title="[% $comment.created_at %]">[% $comment.time_ago %]</span></small>
         </div>
         <div class="pt-4">
 %%              $comment.content
         </div>
         <br />
-          <a class="card-link" data-bs-toggle="collapse" href="#replyForm[% $comment.id %]" role="button" aria-expanded="false" aria-controls="replyForm[% $comment.id %]">[Reply]</a>
-        <a href="#" class="card-link">[Permlink]</a>
+        <a class="card-link" data-bs-toggle="collapse" href="#replyForm[% $comment.id %]" role="button" aria-expanded="false" aria-controls="replyForm[% $comment.id %]">[Reply]</a>
+        
+        <a href="[% $c.url_for( '#comment_' ~ $comment.id ) %]" class="card-link">[Permlink]</a>
         <div id="replyForm[% $comment.id %]" class="row mx-2 my-4 collapse">
             <form method="POST" action="[% $c.url_for( 'do_blog_comment' ) %]">
                 <input type="hidden" name="parent_id"     value="[% $comment.id %]" />
