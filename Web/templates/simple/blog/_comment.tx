@@ -20,13 +20,17 @@
                     <textarea class="form-control" name="message" id="message" rows="3"></textarea>
                 </div>
 
+%%              if ( $person ) {
                 <button type="submit" class="btn btn-primary float-end">Post Message</button>
+%%              } else {
+                <button type="submit" disabled class="btn btn-primary float-end">Please login or register to reply</button>
+%%              }
             </form>
         </div>
     </div>
 %%      for $comment.get_children -> $child_comment {  
     <div style="margin-left: 2em">
-%%              include "/default/blog/_comment.tx" { comment => $child_comment };
+%%              include "/simple/blog/_comment.tx" { comment => $child_comment };
     </div>
 %%      }
 </div>

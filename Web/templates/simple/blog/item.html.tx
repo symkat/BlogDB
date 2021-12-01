@@ -61,7 +61,12 @@
                             <label class="form-check-label" for="rev_neg">This is a negative review.  I dislike this blog.</label>
                         </div>
 
+%%                      if ( $person ) {
                         <button type="submit" class="btn btn-primary float-end">Post Review</button>
+%%                      } else {
+                        <button type="submit" disabled class="btn btn-primary float-end">Please login or register to post a review.</button>
+
+%%                      }
                     </form>
                 </div>
                 <!-- End Review / Root Comment Form-->
