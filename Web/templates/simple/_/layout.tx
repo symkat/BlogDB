@@ -97,7 +97,7 @@
                         <div class="card-body">
                             <form method="post" action="[% $c.url_for( 'do_new_blog' ) %]">
                                 <div class="input-group">
-                                    <input class="form-control" type="text" placeholder="https://..." aria-label="Enter url" aria-describedby="button-add" />
+                                    <input class="form-control" name="url" type="text" placeholder="https://..." aria-label="Enter url" aria-describedby="button-add" />
                                     <button class="btn btn-primary" id="button-add" type="submit">Suggest Blog</button>
                                 </div>
                             </form>
