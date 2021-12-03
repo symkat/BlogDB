@@ -15,7 +15,7 @@ sub register ( $self, $app, $config ) {
     );
 
     $app->plugin( Minion => { Pg => $app->config->{database}->{minion} } );
-    $app->plugin( 'Minion::Admin' );
+    $app->plugin( 'Minion::Admin', route => $config->{route});
 
     $app->helper( extract_feed => sub ( $c, $url ) {
         my $rss = XML::RSS->new;

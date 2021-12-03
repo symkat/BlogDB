@@ -1,0 +1,14 @@
+---
+secrets:
+  - oaKnK4gde163sNcpi6Kl1kZvTBx4aKHOLUOdZkSDzVl7cvgLipUyYqjvA0QGgN87
+
+database:
+  blogdb: <%= $ENV{BDB_DEFAULT_DB} %> 
+  minion: <%= $ENV{BDB_MINION_DB} %> 
+
+template_dir: simple
+screenshot_dir: /home/app/BlogDB/static/blog_screenshots/
+
+ws_screenshot:
+  base_url: <%= $ENV{WC_SCREENSHOT_URL} %>
+

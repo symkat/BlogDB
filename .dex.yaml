@@ -32,3 +32,31 @@
       desc: "Build the blogdb app container."
       shell:
         - docker build . -t symkat/blogdb -f .docker/blogdb.dockerfile
+
+- name: blogdb
+  desc: "Control a full BlogDB instance with Docker."
+  children:
+    - name: start
+      desc: "Start full BlogDB application."
+      shell:
+        - docker-compose --project-directory . -f ./.docker/blogdb.yml up
+    - name: stop
+      desc: "stop full BlogDB application."
+      shell:
+        - docker-compose --project-directory . -f ./.docker/blogdb.yml down
+    - name: status
+      desc: "Show status of full BlogDB application."
+      shell:
+        - docker-compose --project-directory . -f ./.docker/blogdb.yml ps
+    - name: reset
+      desc: "Destroy all data for BlogDB."
+      shell: 
+        - docker-compose --project-directory . -f ./.docker/blogdb.yml down -v
+    - name: appdb
+      desc: "Grab a shell to psql"
+      shell:
+        - docker exec -ti blogdb-database psql -U blogdb blogdb
+    - name: miniondb
+      desc: "Grab a shell to psql"
+      shell:
+        - docker exec -ti blogdb-miniondb psql -U minion minion

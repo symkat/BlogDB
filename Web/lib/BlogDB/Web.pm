@@ -1,11 +1,17 @@
 package BlogDB::Web;
 use Mojo::Base 'Mojolicious', -signatures;
 use BlogDB::DB;
+use IO::Socket::INET;
 
 sub startup ($self) {
 
     # Load config, this will give us $self->config.
-    $self->plugin('NotYAMLConfig', { file => 'blogdb.yml' });
+    # Allow an alternative config file to be set by ENV var.
+    if ( $ENV{BDB_CONFIG_FILE} ) {
+        $self->plugin('NotYAMLConfig', { file => $ENV{BDB_CONFIG_FILE} });
+    } else {
+        $self->plugin('NotYAMLConfig', { file => 'blogdb.yml' });
+    }
 
     # Seed the secrets for session management.
     $self->secrets($self->config->{secrets});
@@ -19,6 +25,35 @@ sub startup ($self) {
             syntax => 'Metakolon',
         }
     });
+
+    # The database for minion needs to be live when we start, with
+    # docker we have some startup time between the DBs loading and them
+    # accepting connections.  This block will wait for connections to the
+    # DB to be successful before continueing with the application startup.
+    if ( $ENV{BDB_DOCKER_HOST_WAIT} ) {
+        while ( 1 ) {
+            warn "Trying to connect to " . $ENV{BDB_DHW_MINION_HOST} . "\n"; 
+            IO::Socket::INET->new(
+                PeerAddr => $ENV{BDB_DHW_MINION_HOST},
+                PeerPort => 5432,
+                Proto    => 'tcp',
+                Timeout  => 3,
+            ) and last;
+            sleep 3;
+        }
+        warn "Connection successful - continue.\n";
+        while ( 1 ) {
+            warn "Trying to connect to " . $ENV{BDB_DHW_DEFAULT_HOST} . "\n"; 
+            IO::Socket::INET->new(
+                PeerAddr => $ENV{BDB_DHW_DEFAULT_HOST},
+                PeerPort => 5432,
+                Proto    => 'tcp',
+                Timeout  => 3,
+            ) and last;
+            sleep 3;
+        }
+        warn "Connection successful - continue.\n";
+    }
 
     # Create $self->db as a BlogDB::DB connection.
     $self->helper( db => sub {
@@ -35,7 +70,6 @@ sub startup ($self) {
     # Make _public/ in the template dir be on the static path resolution.
     push @{$self->static->paths}, 'templates/' . $self->config->{template_dir} . "/_public";
 
-    $self->plugin( 'BlogDB::Web::Plugin::MinionTasks');
 
     # Add the templates/$name/_public/ directory to the static paths,
     # if the directory exists.
@@ -80,6 +114,16 @@ sub startup ($self) {
         $c->redirect_to( $c->url_for( 'homepage' ) );
         return undef;
     });
+
+    my $minion_auth = $auth->under( '/minion' => sub ($c) {
+        return 1 if $c->stash->{person}->setting('can_see_minion');
+
+        $c->redirect_to( $c->url_for( 'homepage' ) );
+        return undef;
+    });
+
+    # Minion and helpers plugin (down here because we need the router done).
+    $self->plugin( 'BlogDB::Web::Plugin::MinionTasks', { route => $minion_auth } );
 
     # Home Page
     $r->get('/')->to( 'Root#get_homepage' )->name('homepage');

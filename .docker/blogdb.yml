@@ -1,0 +1,81 @@
+version: '3'
+
+services:
+  webserver:
+    image: symkat/blogdb:latest
+    ports:
+      - 8000:3000
+    container_name: blogdb-webserver
+    environment:
+      # Configuration for perl
+      PERL5LIB:             '/home/app/perl5/lib/perl5'
+      PERL_MB_OPT:          '--install_base "/home/app/perl5"'
+      PERL_MM_OPT:          'INSTALL_BASE=/home/app/perl5'
+      PERL_LOCAL_LIB_ROOT:  '/home/app/perl5'
+      # Configuration For The App
+      BDB_CONFIG_FILE:      'blogdb.docker.yml'
+      WC_SCREENSHOT_URL:    'http://screenshot:3000'
+      BDB_MINION_DB:        'postgresql://minion:minion@miniondb/minion'
+      BDB_DEFAULT_DB:       'postgresql://blogdb:blogdb@database/blogdb'
+      BDB_DOCKER_HOST_WAIT: 1,
+      BDB_DHW_MINION_HOST:  'miniondb'
+      BDB_DHW_DEFAULT_HOST: 'database'
+      
+    volumes:
+      - ./Web:/home/app/BlogDB
+    working_dir: /home/app/BlogDB
+    command: ./script/blogdb_web daemon
+    depends_on:
+      - "database"
+      - "miniondb"
+  worker:
+    image: symkat/blogdb:latest
+    container_name: blogdb-minion-worker
+    environment:
+      # Configuration for perl
+      PERL5LIB:             '/home/app/perl5/lib/perl5'
+      PERL_MB_OPT:          '--install_base "/home/app/perl5"'
+      PERL_MM_OPT:          'INSTALL_BASE=/home/app/perl5'
+      PERL_LOCAL_LIB_ROOT:  '/home/app/perl5'
+      # Configuration For The App
+      BDB_CONFIG_FILE:      'blogdb.docker.yml'
+      WC_SCREENSHOT_URL:    'http://screenshot:5000'
+      BDB_MINION_DB:        'postgresql://minion:minion@miniondb/minion'
+      BDB_DEFAULT_DB:       'postgresql://blogdb:blogdb@database/blogdb'
+      BDB_DOCKER_HOST_WAIT: 1,
+      BDB_DHW_MINION_HOST:  'miniondb'
+      BDB_DHW_DEFAULT_HOST: 'database'
+    volumes:
+      - ./Web:/home/app/BlogDB
+    working_dir: /home/app/BlogDB
+    command: ./script/blogdb_web minion worker
+    depends_on:
+      - "database"
+      - "miniondb"
+  database:
+    image: postgres:11
+    container_name: blogdb-database
+    environment:
+      - POSTGRES_PASSWORD=blogdb
+      - POSTGRES_USER=blogdb
+      - POSTGRES_DB=blogdb
+    volumes:
+      - ./DB/etc/schema.sql:/docker-entrypoint-initdb.d/000_schema.sql:ro
+      - blogdb_database:/var/lib/postgresql/data
+  miniondb:
+    image: postgres:11
+    container_name: blogdb-miniondb
+    environment:
+      - POSTGRES_PASSWORD=minion
+      - POSTGRES_USER=minion
+      - POSTGRES_DB=minion
+    volumes:
+      - minion_database:/var/lib/postgresql/data
+  screenshot:
+    image: elestio/ws-screenshot.slim
+    container_name: blogdb-screenshot
+
+
+volumes:
+  blogdb_database:
+  minion_database:
