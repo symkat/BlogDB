@@ -33,7 +33,7 @@ echo \
 
 # Finally, actually install docker.
 apt-get update -y;
-apt-get install -y docker-ce docker-ce-cli containerd.io;
+apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose;
 
 # Setup local::lib for the future and then enable it for the rest of this script.
 
