@@ -4,7 +4,7 @@ services:
   webserver:
     image: symkat/blogdb:latest
     ports:
-      - 8000:3000
+      - 80:3000
     container_name: blogdb-webserver
     environment:
       # Configuration for perl
@@ -23,6 +23,7 @@ services:
       
     volumes:
       - ./Web:/home/app/BlogDB
+      - blogdb_staticfs:/home/app/BlogDB/public
     working_dir: /home/app/BlogDB
     command: ./script/blogdb_web daemon
     depends_on:
@@ -39,7 +40,7 @@ services:
       PERL_LOCAL_LIB_ROOT:  '/home/app/perl5'
       # Configuration For The App
       BDB_CONFIG_FILE:      'blogdb.docker.yml'
-      WC_SCREENSHOT_URL:    'http://screenshot:5000'
+      WC_SCREENSHOT_URL:    'http://screenshot:3000'
       BDB_MINION_DB:        'postgresql://minion:minion@miniondb/minion'
       BDB_DEFAULT_DB:       'postgresql://blogdb:blogdb@database/blogdb'
       BDB_DOCKER_HOST_WAIT: 1,
@@ -47,6 +48,7 @@ services:
       BDB_DHW_DEFAULT_HOST: 'database'
     volumes:
       - ./Web:/home/app/BlogDB
+      - blogdb_staticfs:/home/app/BlogDB/public
     working_dir: /home/app/BlogDB
     command: ./script/blogdb_web minion worker
     depends_on:
@@ -78,4 +80,5 @@ services:
 
 volumes:
   blogdb_database:
+  blogdb_staticfs:
   minion_database:

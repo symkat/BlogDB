@@ -7,7 +7,6 @@ database:
   minion: <%= $ENV{BDB_MINION_DB} %> 
 
 template_dir: simple
-screenshot_dir: /home/app/BlogDB/static/blog_screenshots/
 
 ws_screenshot:
   base_url: <%= $ENV{WC_SCREENSHOT_URL} %>
