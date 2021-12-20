@@ -23,7 +23,7 @@ sub import {
 our $pgsql = Test::Postgresql58->new()
     or BAILOUT( "PSQL Error: " . $Test::Postgresql58::errstr );
 
-load_psql_file("/home/symkat/Code/BlogDB/DB/etc/schema.sql");
+load_psql_file("../DB/etc/schema.sql");
 
 $ENV{BLOGDB_TESTMODE} = 1;
 $ENV{BLOGDB_DSN}      = $pgsql->dsn;
