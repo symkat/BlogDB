@@ -52,6 +52,10 @@ sub register ( $self, $app, $config ) {
         my $rs1 = $type eq 'pending' ? 'PendingBlog' : 'Blog';
         my $blog = $job->app->db->resultset($rs1)->find( $blog_id );
 
+        if ( ! $blog ) {
+            die "Error: Failed to load blog from $rs1 for id $blog_id";
+        }
+
         make_path( $job->app->static->paths->[0] . '/screenshots/' );
         my $out  = tempfile( 
             DIR    => $job->app->static->paths->[0] . '/screenshots/',
@@ -74,6 +78,10 @@ sub register ( $self, $app, $config ) {
         my $rs3 = $type eq 'pending' ? 'pending_blog_entries' : 'blog_entries';
 
         my $blog = $job->app->db->resultset($rs1)->find( $blog_id );
+        
+        if ( ! $blog ) {
+            die "Error: Failed to load blog from $rs1 for id $blog_id";
+        }
 
         return unless $blog->rss_url;
 
