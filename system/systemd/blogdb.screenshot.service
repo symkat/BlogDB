@@ -1,0 +1,14 @@
+[Unit]
+Description=BlogDB Screenshot Service
+After=docker.service
+Requires=docker.service
+
+[Service]
+ExecStartPre=-/usr/bin/docker stop blogdb-screenshot
+ExecStartPre=-/usr/bin/docker rm blogdb-screenshot
+ExecStartPre=/usr/bin/docker pull elestio/ws-screenshot.slim
+ExecStart=/usr/bin/docker run --name blogdb-screenshot -p 127.0.0.1:5000:3000 elestio/ws-screenshot.slim
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

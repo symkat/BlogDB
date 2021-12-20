@@ -1,0 +1,17 @@
+[Unit]
+Description=BlogDB Web Service
+After=network.target
+
+[Service]
+ExecStart=/home/vagrant/perl5/bin/morbo ./script/blogdb_web daemon
+Restart=on-failure
+User=vagrant
+Group=vagrant
+WorkingDirectory=/home/vagrant/BlogDB/Web
+Environment="PERL_MB_OPT=--install_base \"/home/vagrant/perl5\""
+Environment="PERL_MM_OPT=INSTALL_BASE=/home/vagrant/perl5"
+Environment="PERL5LIB=/home/vagrant/perl5/lib/perl5"
+Environment="PATH=/home/vagrant/perl5/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games"
+
+[Install]
+WantedBy=multi-user.target

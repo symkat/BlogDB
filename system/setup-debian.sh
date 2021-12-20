@@ -3,17 +3,88 @@
 # Script to set up a new Debian 11 machine to support BlogDB with docker & dex.
 #==
 
-if $UID -ne 0; then
-    echo "Error: This script must be run as root.";
-    exit -1;
-fi
+#if $UID -ne 0; then
+#    echo "Error: This script must be run as root.";
+#    exit -1;
+#fi
 
 #==
 # Update the packages and install supporting software.
 #==
 apt-get update -y;
 apt-get upgrade -y;
-apt-get install -y git build-essential cpanminus liblocal-lib-perl;
+apt-get install -y git build-essential cpanminus liblocal-lib-perl expect;
+
+#==
+# Install postgresql, some database helpers, and set our DBs up.
+#==
+apt-get install -y postgresql postgresql-contrib postgresql-client
+
+# Make a script to make createdb run with env vars.
+cat > /bin/createdb_from_env <<'EOF';
+#!/usr/bin/env expect
+
+set username $env(DB_USER)
+set password $env(DB_PASS)
+set database $env(DB_NAME)
+
+spawn createdb -h localhost -U $username -W $database
+expect "Password:"
+send "$password\r\n"
+expect eof
+EOF
+
+# Make a script to make createuser run with env vars.
+cat > /bin/createuser_from_env <<'EOF';
+#!/usr/bin/env expect
+
+set username $env(DB_USER)
+set password $env(DB_PASS)
+
+spawn createuser -d $username -P
+expect "Enter password for new role:"
+send "$password\r\n"
+expect "Enter it again:"
+send "$password\r\n"
+expect eof
+EOF
+
+# Make a script to import a DB file.
+cat > /bin/psql_import_from_env <<'EOF';
+#!/usr/bin/env expect
+
+set username $env(DB_USER)
+set password $env(DB_PASS)
+set database $env(DB_NAME)
+set filename $env(DB_FILE)
+
+spawn psql -U $username -W --host localhost -f $filename $database
+expect "Password:"
+send "$password\r\n"
+expect eof
+EOF
+
+# Make a script to make createuser run with env vars.
+cat > /bin/randpass <<'EOF';
+#!/usr/bin/env perl
+
+my @chars = ( 'A' .. 'Z', 'a' .. 'z', 0 .. 9 );
+
+print map { $chars[int rand @chars] } ( 0 .. 48 );
+EOF
+
+# Make all our scripts executable.
+chmod 755 /bin/createdb_from_env
+chmod 755 /bin/createuser_from_env
+chmod 755 /bin/psql_import_from_env
+chmod 755 /bin/randpass
+
+# Create a random password for the db, store it in a file so we can refer to it later.
+randpass > /root/.database_password
+
+DB_USER="blogdb" DB_PASS=$(cat /root/.database_password) sudo -Eu postgres createuser_from_env
+DB_USER="blogdb" DB_PASS=$(cat /root/.database_password) DB_NAME="blogdb" createdb_from_env
+DB_USER="blogdb" DB_PASS=$(cat /root/.database_password) DB_NAME="minion" createdb_from_env
 
 #==
 # Install Docker
