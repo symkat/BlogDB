@@ -1,12 +1,14 @@
 requires 'Minion';
 requires 'Mojolicious::Plugin::XslateRenderer';
 requires 'Mojolicious::Plugin::RenderFile';
+requires 'Mojo::Feed';
 requires 'Mojo::Pg';
 requires 'DateTime::Format::Pg';
 requires 'BlogDB::DB';
 requires 'WebService::WsScreenshot';
 requires 'LWP::UserAgent';
 requires 'XML::RSS'; # This requires libexpat1-dev
+requires 'HTML::TreeBuilder';
 
 test_requires "Test::Postgresql58";
 test_requires "Test::More";
