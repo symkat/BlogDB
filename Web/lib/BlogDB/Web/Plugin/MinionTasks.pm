@@ -8,6 +8,8 @@ use Try::Tiny;
 use Mojo::File qw( tempfile );
 use File::Path qw( make_path );
 use BlogDB::Scanner;
+use Mojo::Feed;
+use DateTime;
 
 sub register ( $self, $app, $config ) {
 
@@ -103,21 +105,21 @@ sub register ( $self, $app, $config ) {
 
         return unless $blog->rss_url;
 
-        my $entries = $job->app->extract_feed( $blog->rss_url );
+        my $feed = Mojo::Feed->new( url => $blog->rss_url );
 
-        foreach my $entry ( @{$entries} ) {
+        $feed->items->each( sub {
             my $entry_count = $job->app->db->resultset($rs2)->search({
-                url => $entry->{link},
+                url => $_->link,
             })->count;
 
-            next if $entry_count >= 1;
+            return if $entry_count >= 1;
 
             $blog->create_related( $rs3, {
-                title        => $entry->{title},
-                url          => $entry->{link},
-                publish_date => $entry->{date},
+                title        => $_->title,
+                url          => $_->link,
+                publish_date => DateTime->from_epoch( epoch => $_->published),
             });
-        } 
+        });
     });
 }
 
