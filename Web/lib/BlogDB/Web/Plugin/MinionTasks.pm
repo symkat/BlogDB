@@ -7,6 +7,7 @@ use XML::RSS;
 use Try::Tiny;
 use Mojo::File qw( tempfile );
 use File::Path qw( make_path );
+use BlogDB::Scanner;
 
 sub register ( $self, $app, $config ) {
 
@@ -69,6 +70,23 @@ sub register ( $self, $app, $config ) {
         );
 
         $blog->img_url( '/screenshots/' . $out->basename );
+        $blog->update;
+    });
+
+    $app->minion->add_task(populate_blog_data => sub ( $job, $blog_id, $type ) {
+        my $rs1 = $type eq 'pending' ? 'PendingBlog' : 'Blog';
+        my $blog = $job->app->db->resultset($rs1)->find( $blog_id );
+
+        if ( ! $blog ) {
+            die "Error: Failed to load blog from $rs1 for id $blog_id";
+        }
+
+        my $data = BlogDB::Scanner->scan( $blog->url );
+
+        $blog->tagline( $data->description );
+        $blog->title  ( $data->title       );
+        $blog->rss_url( $data->rss_url     );
+
         $blog->update;
     });
     
