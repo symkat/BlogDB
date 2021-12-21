@@ -291,4 +291,14 @@ sub formatted_about {
 
   return $str;
 }
+
+sub published_ago {
+  my ( $self ) = @_;
+
+  my $post = $self->search_related('blog_entries', { }, { order_by => { -asc => 'created_at' } } )->first;
+
+  return $post->published_ago;
+
+}
+
 1;
