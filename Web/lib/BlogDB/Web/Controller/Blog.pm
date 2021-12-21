@@ -22,6 +22,8 @@ sub get_view_blog ($c) {
     my $blog = $c->stash->{blog} = $c->db->resultset('Blog')->find(
         $c->_slug_to_id($c->param('slug'))
     );
+
+    push @{$c->stash->{posts}} , $blog->search_related( 'blog_entries')->all;
 }
 
 sub get_view_random_blog ( $c ) {

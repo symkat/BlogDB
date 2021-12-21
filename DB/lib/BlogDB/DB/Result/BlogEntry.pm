@@ -137,6 +137,21 @@ __PACKAGE__->belongs_to(
 # Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-10-06 18:19:48
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:kxnEMUyBOfQ0qkeWO/qSMg
 
+sub published_ago {
+  my ( $self ) = @_;
+
+  my $delta = DateTime->now->delta_days( $self->publish_date );
+
+  my $days = $delta->in_units('days');
+
+  return 'today'                           if $days == 0;
+  return 'yesterday'                       if $days == 1;
+  return "$days days ago"                  if $days < 10;
+  return int( $days / 7 ) . " weeks ago"   if $days < 60;
+  return int( $days / 30 ) . " months ago" if $days < 365;
+  return "last year"                       if $days < 730;
+  return int( $days / 365 ) . " years ago";
+}
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;
