@@ -13,6 +13,9 @@ sub startup ($self) {
         $self->plugin('NotYAMLConfig', { file => 'blogdb.yml' });
     }
 
+    # Find our custom commands.
+    push @{$self->commands->namespaces}, 'BlogDB::Web::Command';
+
     # Seed the secrets for session management.
     $self->secrets($self->config->{secrets});
 
