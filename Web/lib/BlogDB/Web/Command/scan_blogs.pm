@@ -31,7 +31,7 @@ sub run {
             unless $quiet;
 
         if ( ! $blog->last_updated ) {
-            print "No last_updated date for this entry, setting to yesterday"
+            print "No last_updated date for this entry, setting to yesterday\n"
                 unless $quiet;
             $blog->last_updated( DateTime->now->subtract( days => 1 ));
             if ( $noop ) {
