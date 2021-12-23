@@ -297,6 +297,8 @@ sub published_ago {
 
   my $post = $self->search_related('blog_entries', { }, { order_by => { -asc => 'created_at' } } )->first;
 
+  return 'never before?' unless $post;
+
   return $post->published_ago;
 
 }

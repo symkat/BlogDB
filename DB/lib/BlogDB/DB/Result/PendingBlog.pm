@@ -272,4 +272,15 @@ sub posts {
   } $self->search_related( 'pending_blog_entries')->all ];
 }
 
+sub published_ago {
+  my ( $self ) = @_;
+
+  my $post = $self->search_related('pending_blog_entries', { }, { order_by => { -asc => 'created_at' } } )->first;
+
+  return 'never before?' unless $post;
+
+  return $post->published_ago;
+
+}
+
 1;
