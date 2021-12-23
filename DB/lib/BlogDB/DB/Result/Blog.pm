@@ -260,7 +260,7 @@ sub posts {
       url   => $_->url,
       date  => $_->publish_date,
     }
-  } $self->search_related( 'blog_entries', { order_by => { -desc => 'publish_date'} })->all ];
+  } $self->search_related( 'blog_entries', {}, { order_by => { -desc => 'publish_date'} })->all ];
 }
 
 sub get_comments {
