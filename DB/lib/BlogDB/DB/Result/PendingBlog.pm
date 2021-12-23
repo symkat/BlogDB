@@ -275,7 +275,7 @@ sub posts {
 sub published_ago {
   my ( $self ) = @_;
 
-  my $post = $self->search_related('pending_blog_entries', { }, { order_by => { -asc => 'created_at' } } )->first;
+  my $post = $self->search_related('pending_blog_entries', { }, { order_by => { -asc => 'publish_date' } } )->first;
 
   return 'never before?' unless $post;
 

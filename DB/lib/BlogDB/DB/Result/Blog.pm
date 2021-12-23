@@ -260,7 +260,7 @@ sub posts {
       url   => $_->url,
       date  => $_->publish_date,
     }
-  } $self->search_related( 'blog_entries')->all ];
+  } $self->search_related( 'blog_entries', { order_by => { -asc => 'publish_date'} })->all ];
 }
 
 sub get_comments {
@@ -295,7 +295,7 @@ sub formatted_about {
 sub published_ago {
   my ( $self ) = @_;
 
-  my $post = $self->search_related('blog_entries', { }, { order_by => { -asc => 'created_at' } } )->first;
+  my $post = $self->search_related('blog_entries', { }, { order_by => { -asc => 'publish_date' } } )->first;
 
   return 'never before?' unless $post;
 
