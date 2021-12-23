@@ -269,13 +269,13 @@ sub posts {
       url   => $_->url,
       date  => $_->publish_date,
     }
-  } $self->search_related( 'pending_blog_entries')->all ];
+  } $self->search_related( 'pending_blog_entries', { order_by => { -desc => 'publish_date'} })->all ];
 }
 
 sub published_ago {
   my ( $self ) = @_;
 
-  my $post = $self->search_related('pending_blog_entries', { }, { order_by => { -asc => 'publish_date' } } )->first;
+  my $post = $self->search_related('pending_blog_entries', { }, { order_by => { -desc => 'publish_date' } } )->first;
 
   return 'never before?' unless $post;
 

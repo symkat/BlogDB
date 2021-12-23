@@ -41,7 +41,7 @@
 
         <div class="card mb-4">
             <div class="card-header">Recent Posts</div>
-%%          for $posts -> $post {
+%%          for $blog.posts -> $post {
             <div class="card-body">
                 [% $post.published_ago %] -  <a href="[% $post.url %]">[% $post.title %]</a>
             </div>
