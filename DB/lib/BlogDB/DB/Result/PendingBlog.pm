@@ -265,9 +265,10 @@ sub posts {
 
   return [ map {
     +{
-      title => $_->title,
-      url   => $_->url,
-      date  => $_->publish_date,
+      title         => $_->title,
+      url           => $_->url,
+      date          => $_->publish_date,
+      published_ago => $_->published_ago,
     }
   } $self->search_related( 'pending_blog_entries', {}, { order_by => { -desc => 'publish_date'} })->all ];
 }
