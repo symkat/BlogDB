@@ -120,6 +120,9 @@ sub register ( $self, $app, $config ) {
                 publish_date => DateTime->from_epoch( epoch => $_->published),
             });
         });
+
+        $blog->last_updated( DateTime->now );
+        $blog->update;
     });
 }
 
