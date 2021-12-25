@@ -79,9 +79,11 @@
                     <div class="card mb-4">
                         <div class="card-header">Hello, [% $person.username %]!</div>
                         <div class="card-body">
-                            <form method="post" action="[% $c.url_for( 'do_logout' ) %]">
+                            <a class="btn btn-outline-success" href="[% $c.url_for( 'user_settings' ) %]">Settings</a>
+                            <form style="display: inline" method="post" action="[% $c.url_for( 'do_logout' ) %]">
                                 <button class="btn btn-outline-success" type="submit">Logout</button>
                             </form>
+
                         </div>
                     </div>
 %%                  }

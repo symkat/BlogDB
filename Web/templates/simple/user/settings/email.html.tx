@@ -35,9 +35,10 @@
                 <div class="col">
                     <form method="post" action="[% $c.url_for( 'do_user_email' ) %]">
 %%                      include 'simple/_/form/input.tx' { type => 'email', name => 'email',
-%%                          title => 'Email address',
-%%                          help  => 'New email address',
-%%                          value => $form_email,
+%%                          title       => 'Email address',
+%%                          help        => 'New email address',
+%%                          value       => $form_email,
+%%                          placeholder => $c.stash.person.email,
 %%                      };
 
 %%                      include 'simple/_/form/input.tx' { type => 'password', name => 'password',
