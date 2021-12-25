@@ -145,11 +145,15 @@ sub startup ($self) {
     #$r->get    ( '/user/:name'            )->to( 'User#get_user'     )->name( 'user'             );
     #$auth->post( '/user/:name/follow'     )->to( 'User#post_follow'  )->name( 'do_follow_user'   );
     #$auth->post( '/user/:name/unfollow'   )->to( 'User#post_unfollow')->name( 'do_unfollow_user' );
-    #$auth->get ( '/user/settings'         )->to( 'User#get_settings' )->name( 'user_settings'    );
+    $auth->get ( '/user/settings'            )->to( 'User#get_settings'         )->name( 'user_settings'         );
+    $auth->post( '/user/settings'            )->to( 'User#post_settings'        )->name( 'do_user_settings'        );
+    $auth->get ( '/user/settings/email'      )->to( 'User#get_settings_email'   )->name( 'user_settings_email'   );
+    $auth->post( '/user/settings/email'      )->to( 'User#post_email'           )->name( 'do_user_email'         );
+    $auth->get ( '/user/settings/password'   )->to( 'User#get_settings_password')->name( 'user_settings_password');
+    $auth->post( '/user/settings/password'   )->to( 'User#post_password'        )->name( 'do_user_password'      );
+    #$auth->get ( '/user/settings'            )->to( 'User#get_settings' )->name( 'user_settings'    );
     #$auth->post( '/user/settings/bio'     )->to( 'User#post_bio'     )->name( 'do_user_bio'      );
     #$auth->post( '/user/settings/about'   )->to( 'User#post_about'   )->name( 'do_user_about'    );
-    #$auth->post( '/user/settings/password')->to( 'User#post_password')->name( 'do_user_password' );
-    #$auth->post( '/user/settings/email'   )->to( 'User#post_email'   )->name( 'do_user_email'    );
 
     # /blog/ routes
     $r->get    ( '/blog/new'              )->to( 'Blog#get_new_blogs'        )->name( 'new_blogs'           ); # List new blogs.

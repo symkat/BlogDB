@@ -1,0 +1,51 @@
+%%  cascade simple::_::layout { title => 'Your Settings',
+%%      
+%%  }
+
+%% override panel -> {
+
+        <div class="row" style="margin-bottom: 2em">
+            <ul class="nav nav-tabs">
+                <li class="nav-item"><a class="nav-link active" href="[% $c.url_for( 'user_settings' ) %]">Settings</a></li>
+                <li class="nav-item"><a class="nav-link" href="[% $c.url_for( 'user_settings_email' ) %]">Email</a></li>
+                <li class="nav-item"><a class="nav-link" href="[% $c.url_for( 'user_settings_password' ) %]">Password</a></li>
+            </ul>
+        </div>
+
+
+        <div class="row">
+            <!-- Error Handling On LHS -->
+            <div class="col">
+%%              if ( $errors.size() ) { 
+                <div style="margin-top: 2em" class="alert alert-danger" role="alert">
+                    There were errors with your request that could not be resolved:
+                    <ul>
+%%                  for $errors -> $error {
+                        <li>[% $error %]</li>
+%%                  } 
+                    </ul>
+                </div>
+%%              } 
+            </div>
+        </div>
+
+        <!-- General settings page-->
+        <div class="row">
+            <div class="col">
+                <h3 style="margin-bottom: 0.5em">Settings</h3>
+                <div class="col">
+                    <form method="post" action="[% $c.url_for( 'do_user_settings' ) %]">
+                        <!-- Change view is_adult tags/blogs-->
+                        <div class="form-check form-switch">
+                            <input name="is_adult" [% $form_adult ? " checked" : "" %] class="form-check-input" type="checkbox" id="is_adult_bool">
+                            <label class="form-check-label" for="is_adult_bool"><strong>View adult content</strong> See blogs and tags that have been marked as adult content.</label>
+                        </div>
+
+                        <!-- Submit-->
+                        <button type="submit" style="margin-top: 0.5em" class="btn btn-primary float-end">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+                
+%%  } 

@@ -1,0 +1,53 @@
+
+%%  cascade simple::_::layout { title => 'Your Settings - Email',
+%%      
+%%  }
+
+%% override panel -> {
+        <div class="row" style="margin-bottom: 2em">
+            <ul class="nav nav-tabs">
+                <li class="nav-item"><a class="nav-link" href="[% $c.url_for( 'user_settings' ) %]">Settings</a></li>
+                <li class="nav-item"><a class="nav-link active" href="[% $c.url_for( 'user_settings_email' ) %]">Email</a></li>
+                <li class="nav-item"><a class="nav-link" href="[% $c.url_for( 'user_settings_password' ) %]">Password</a></li>
+            </ul>
+        </div>
+
+        <div class="row">
+            <!-- Error Handling On LHS -->
+            <div class="col">
+%%              if ( $errors.size() ) { 
+                <div style="margin-top: 2em" class="alert alert-danger" role="alert">
+                    There were errors with your request that could not be resolved:
+                    <ul>
+%%                  for $errors -> $error {
+                        <li>[% $error %]</li>
+%%                  } 
+                    </ul>
+                </div>
+%%              } 
+            </div>
+        </div>
+
+        <!-- Change Email Address -->
+        <div class="row">
+            <div class="col">
+                <h3>Change email address</h3>
+                <div class="col">
+                    <form method="post" action="[% $c.url_for( 'do_user_email' ) %]">
+%%                      include 'simple/_/form/input.tx' { type => 'email', name => 'email',
+%%                          title => 'Email address',
+%%                          help  => 'New email address',
+%%                          value => $form_email,
+%%                      };
+
+%%                      include 'simple/_/form/input.tx' { type => 'password', name => 'password',
+%%                          title => 'Password',
+%%                          help  => 'To ensure it is you changing your email address.',
+%%                          value => $form_password,
+%%                      };
+                        <button type="submit" class="btn btn-primary float-end">Change Email</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+%%  } 

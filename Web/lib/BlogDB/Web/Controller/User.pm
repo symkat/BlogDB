@@ -26,6 +26,17 @@ sub get_settings ($c) {
 
 }
 
+sub get_settings_email ($c) {
+    $c->set_template( 'user/settings/email' );
+
+}
+
+sub get_settings_password ($c) {
+    $c->set_template( 'user/settings/password' );
+
+}
+
+
 sub post_bio ($c) {
     $c->set_template( 'user/settings' );
 
