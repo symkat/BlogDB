@@ -86,6 +86,9 @@ sub startup ($self) {
     # Templates must consider that $person is undef when no one is logged in.
     my $r = $router->under( '/' => sub ($c) {
 
+        # Global user setting, default to off.
+        $c->stash->{can_view_adult} = 0;
+
         # Login via session cookie.
         if ( $c->session('uid') ) {
             my $person = $c->db->resultset('Person')->find( $c->session('uid') );
@@ -95,13 +98,26 @@ sub startup ($self) {
                 $c->stash->{person_permissions} = {
                     can_manage_tags  => $person->setting('can_manage_tags'),
                     can_manage_blogs => $person->setting('can_manage_blogs'),
+                    can_view_minion  => $person->setting('can_view_minion'),
+                    can_view_adult   => $person->setting('can_view_adult'),
                 };
-                $c->stash->{person_permissions}->{can_manage_tags}   &&= 1;
-                $c->stash->{person_permissions}->{can_manage_tags}   ||= 0;
-                $c->stash->{person_permissions}->{can_manage_blogs}  &&= 1;
-                $c->stash->{person_permissions}->{can_manage_blogs}  ||= 0;
+                $c->stash->{person_permissions}->{can_manage_tags}  &&= 1;
+                $c->stash->{person_permissions}->{can_manage_tags}  ||= 0;
+                $c->stash->{person_permissions}->{can_manage_blogs} &&= 1;
+                $c->stash->{person_permissions}->{can_manage_blogs} ||= 0;
+                $c->stash->{person_permissions}->{can_view_minion}  &&= 1;
+                $c->stash->{person_permissions}->{can_view_minion}  ||= 0;
+                $c->stash->{person_permissions}->{can_view_adult}   &&= 1;
+                $c->stash->{person_permissions}->{can_view_adult}   ||= 0;
+
+                $c->stash->{can_view_adult} = $c->stash->{person_permissions}{can_view_adult};
                 return 1;
             }
+        }
+
+        # Settings via session cookie for anon users.
+        if ( $c->session('cva_setting') ) {
+            $c->stash->{can_view_adult} = $c->session('cva_setting');
         }
 
         return 1;
