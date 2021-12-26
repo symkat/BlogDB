@@ -15,10 +15,22 @@ sub get_homepage ($c) {
         }
     }
 
-    push @{$c->stash->{blogs}}, $c->db->resultset('Blog')->all
-        unless exists $c->stash->{blogs};
-    push @{$c->stash->{tags_a}},  grep  { $_->id % 2 == 1 } $c->db->resultset('Tag')->all;
-    push @{$c->stash->{tags_b}},  grep  { $_->id % 2 == 0 } $c->db->resultset('Tag')->all;
+    # Create session cookie via query param on homepage.
+    if ( defined $c->param( 'cva_setting') ) {
+        $c->session->{cva_setting} = $c->param('cva_setting');
+    } 
+
+    push @{$c->stash->{blogs}}, $c->db->resultset('Blog')->search({
+        ( ! $c->stash->{can_view_adult} ? ( is_adult => 0 ) : () ),
+    })->all unless exists $c->stash->{blogs};
+
+    push @{$c->stash->{tags_a}},  grep  { $_->id % 2 == 1 } $c->db->resultset('Tag')->search({
+        ( ! $c->stash->{can_view_adult} ? ( is_adult => 0 ) : () ),
+    })->all;
+
+    push @{$c->stash->{tags_b}},  grep  { $_->id % 2 == 0 } $c->db->resultset('Tag')->search({
+        ( ! $c->stash->{can_view_adult} ? ( is_adult => 0 ) : () ),
+    })->all;
 
 }
 
