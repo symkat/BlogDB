@@ -1,0 +1,18 @@
+<!-- _/_entry_card.tx start -->
+<div class="card-body">
+        <a class="text-decoration-none" style="font-size: 1.4em" href="[% $entry.url %]">[% $entry.title %]</a>
+        <br />
+        <small>
+                Posted [% $entry.published_ago %]
+                |
+                <a class="text-decoration-none" href="[% $c.url_for( 'view_blog', 'slug', $entry.blog.slug ) %]">[% $entry.blog.title %]</a>
+%%              if ( $entry.blog.tags.size() ) {
+                |
+%%                      for $entry.blog.tags -> $tag {
+                <a class="badge bg-secondary text-decoration-none link-light" href="[% $c.url_for('homepage').query( 'tag', $tag.name ) %]">#[% $tag.name %]</a>
+%%                      } 
+%%              }
+
+        </small>
+</div>
+<!-- _/_entry_card.tx end -->

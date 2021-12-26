@@ -19,6 +19,10 @@ sub get_homepage ($c) {
     if ( defined $c->param( 'cva_setting') ) {
         $c->session->{cva_setting} = $c->param('cva_setting');
     } 
+    
+    push @{$c->stash->{entries}}, $c->db->resultset('BlogEntry')->recent_entries({
+        filter_adult => ! $c->stash->{can_view_adult},
+    });
 
     push @{$c->stash->{blogs}}, $c->db->resultset('Blog')->search({
         ( ! $c->stash->{can_view_adult} ? ( is_adult => 0 ) : () ),

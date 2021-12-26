@@ -3,13 +3,17 @@
 %%  }
 
 %%  override panel -> {
+
+<h3>Recent Posts</h3>
+%%      for $entries -> $entry {
+%%          include 'simple/_/_entry_card.tx' { entry => $entry };
+%%      }
+
+<div class="row" style="margin-top: 2em; margin-bottom: 1em"><hr /></div>
+
+<h3>Collected Blogs</h3>
 %%      for $blogs -> $blog {
-%%          if ( $~blog.is_first ) {
-%%              # <!-- Large Display -->
-%%              include 'simple/_/_blog_card.tx' { blog => $blog };
-%%          } else {
-%%              # <!-- Small Displays -->
-%%              if ( $~blog.index % 2 == 1 ) {
+%%              if ( $~blog.index % 2 == 0 ) {
                     <div class="row">
                         <div class="col-lg-6">
 %%                          include 'simple/_/_blog_card.tx' { blog => $blog };
@@ -24,7 +28,6 @@
                         </div>
                     </div>
 %%             }
-%%          }
 %%      }
 
 %%#    <nav aria-label="Pagination">
