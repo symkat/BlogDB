@@ -8,6 +8,11 @@ sub get_homepage ($c) {
 
     # Find blogs by tag.
     if ( $c->param('tag') ) {
+        push @{$c->stash->{entries}}, $c->db->resultset('BlogEntry')->recent_entries({
+            filter_adult => ! $c->stash->{can_view_adult},
+            has_tag      => $c->param('tag'),
+        });
+
         my $tag = $c->db->resultset('Tag')->search({ name => $c->param('tag') })->first;
         if ( $tag ) {
             push @{$c->stash->{blogs}}, map { $_->blog }
@@ -22,7 +27,7 @@ sub get_homepage ($c) {
     
     push @{$c->stash->{entries}}, $c->db->resultset('BlogEntry')->recent_entries({
         filter_adult => ! $c->stash->{can_view_adult},
-    });
+    }) unless exists $c->stash->{entries};
 
     push @{$c->stash->{blogs}}, $c->db->resultset('Blog')->search({
         ( ! $c->stash->{can_view_adult} ? ( is_adult => 0 ) : () ),
