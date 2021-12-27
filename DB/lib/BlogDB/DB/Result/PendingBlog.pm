@@ -198,6 +198,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 pending_blog_settings
+
+Type: has_many
+
+Related object: L<BlogDB::DB::Result::PendingBlogSetting>
+
+=cut
+
+__PACKAGE__->has_many(
+  "pending_blog_settings",
+  "BlogDB::DB::Result::PendingBlogSetting",
+  { "foreign.pending_blog_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 pending_blog_tag_maps
 
 Type: has_many
@@ -234,8 +249,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-11-24 04:45:56
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:F4GsyDnhsW34Ywl+BCrVEw
+# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-12-27 00:20:15
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:N0fhbAlMKCSAv14SWt0Gfg
 
 sub tags {
     my ( $self ) = @_;
@@ -282,6 +297,48 @@ sub published_ago {
 
   return $post->published_ago;
 
+}
+
+# Settings.
+sub setting {
+    my ( $self, $setting, $value ) = @_;
+
+    if ( defined $value ) {
+        my $rs = $self->find_or_new_related( 'pending_blog_settings', { name => $setting } );
+        $rs->value( ref $value ? $value : { value => $value } );
+
+        $rs->update if     $rs->in_storage;
+        $rs->insert unless $rs->in_storage;
+
+        return $value;
+    } else {
+        return undef unless $setting;
+        my $result = $self->find_related('pending_blog_settings', { 'name' => $setting });
+        return undef unless $result;
+        return $self->_get_setting_value($result);
+    }
+}
+
+sub _get_setting_value {
+    my ( $self, $setting ) = @_;
+
+    if ( ref $setting->value eq 'HASH' and keys %{$setting->value} == 1 and exists $setting->value->{value} ) {
+        return $setting->value->{value};
+    }
+
+    return $setting->value;
+}
+
+sub get_settings {
+    my ( $self ) = @_;
+
+    my $return = {};
+
+    foreach my $setting ( $self->search_related( 'pending_blog_settings', {} )->all ) {
+        $return->{${\($setting->name)}} = $self->_get_setting_value($setting);
+    }
+
+    return $return;
 }
 
 1;
