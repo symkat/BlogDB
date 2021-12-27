@@ -1,0 +1,32 @@
+%%  cascade simple::_::layout { title => 'Populating from' ~ $blog.url,
+%%      hide_welcome_screen => 1,
+%%  }
+
+%% override begin_html_head -> {
+    <meta http-equiv="refresh" content="5">
+%% }
+
+%% override panel -> {
+    <h3>Importing</h3>
+
+    <p>This page will refresh until the blog data has been found, and then you will have a chance to edit the final submission.</p>
+
+    <table class="table" style="margin-top: 2em;" width="100%">
+        <tr>
+            <th>Item Gathering</th>
+            <th>Time Completed</th>
+        </tr>
+        <tr>
+            <td>Screenshot</td>
+            <td>[% $has_img %]</td>
+        </tr>
+        <tr>
+            <td>Blog Data</td>
+            <td>[% $has_inf %]</td>
+        </tr>
+        <tr>
+            <td>RSS Feed</td>
+            <td>[% $has_rss %]</td>
+        </tr>
+    </table>
+%% }

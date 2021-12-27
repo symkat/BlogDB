@@ -73,6 +73,9 @@ sub register ( $self, $app, $config ) {
 
         $blog->img_url( '/screenshots/' . $out->basename );
         $blog->update;
+
+        $blog->setting( 'minion-screenshot' => time );
+
     });
 
     $app->minion->add_task(populate_blog_data => sub ( $job, $blog_id, $type ) {
@@ -90,6 +93,12 @@ sub register ( $self, $app, $config ) {
         $blog->rss_url( $data->rss_url     );
 
         $blog->update;
+
+        if ( $blog->rss_url ) {
+            $job->app->minion->enqueue('populate_blog_entries' => [ $blog->id, $type ] );
+        }
+        
+        $blog->setting( 'minion-data_scrape' => time );
     });
     
     $app->minion->add_task(populate_blog_entries => sub ( $job, $blog_id, $type ) {
@@ -123,6 +132,8 @@ sub register ( $self, $app, $config ) {
 
         $blog->last_updated( DateTime->now );
         $blog->update;
+        
+        $blog->setting( 'minion-rss_scrape' => time );
     });
 }
 

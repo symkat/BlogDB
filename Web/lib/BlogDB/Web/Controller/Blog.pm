@@ -216,6 +216,17 @@ sub get_edit_new_blog ($c) {
     my $blog    = $c->stash->{blog}    = $c->db->resultset('PendingBlog')->find( $blog_id );
     
 
+    # If the blog is not yet ready, we will use an alternative page and
+    # refresh until the blog data has been gathered.
+    my $has_img = $c->stash->{has_img} = $blog->setting('minion-screenshot');
+    my $has_rss = $c->stash->{has_rss} = $blog->setting('minion-rss_scrape');
+    my $has_inf = $c->stash->{has_inf} = $blog->setting('minion-data_scrape');
+
+    if ( not ( $has_img and $has_rss and $has_inf ) ) {
+        $c->set_template( 'blog/new/populating' );
+        return 0;
+    } 
+
     # Populate the form with the current values.
 
     $c->stash->{form_title}   = $blog->title; 
