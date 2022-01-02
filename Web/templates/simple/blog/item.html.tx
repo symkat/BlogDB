@@ -11,11 +11,24 @@
 %%  }
 
 %%  override sidebar_card -> {
-%%      if ( $person_permissions.can_manage_blogs ) { 
+%%      if ( $person ) { 
         <div class="card mb-4">
             <div class="card-header">Actions</div>
             <div class="card-body">
+%%              if ( $person.is_following_blog( $blog.id )) {
+                <form style="display: inline" method="post" action="[% $c.url_for( 'do_unfollow_blog' ) %]">
+                    <input type="hidden" name="blog_id" value="[% $blog.id %]">
+                    <button class="btn btn-outline-success" type="submit">Unfollow</button>
+                </form>
+%%              } else {
+                <form style="display: inline" method="post" action="[% $c.url_for( 'do_follow_blog' ) %]">
+                    <input type="hidden" name="blog_id" value="[% $blog.id %]">
+                    <button class="btn btn-outline-success" type="submit">Follow</button>
+                </form>
+%%              }
+%%              if ( $person_permissions.can_manage_blogs ) { 
                 <a href="[% $c.url_for( 'edit_blog' => 'slug', $blog.slug ) %]" class="btn btn-primary float-end">Edit Blog</a>
+%%              }
             </div>
         </div>
 %%      }
