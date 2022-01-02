@@ -1,0 +1,22 @@
+<!-- _/_blog_sidecard.tx start -->
+<div class="card">
+        <div class="row no-gutters">
+            <div class="col-auto">
+                <img src="[% $blog.img_url %]" style="width: 15em" class="img-fluid" alt="">
+            </div>
+            <div class="col">
+                <div class="card-block px-2">
+                <div class="small text-muted">Last updated [% $blog.published_ago %]</div>
+                <h2 class="card-title h4">[% $blog.title %]</h2>
+                <p class="card-text">[% $blog.tagline %]</p>
+%%              if ( $is_pending_link ) {
+                        <a class="btn btn-primary" href="[% $c.url_for( 'edit_new_blog', 'id', $blog.id ) %]">Edit/Publish Blog →</a>
+%%              } else {
+                        <a class="btn btn-primary" href="[% $c.url_for( 'view_blog', 'slug',$blog.slug ) %]">View Entry →</a>
+%%              }
+                </div>
+            </div>
+        </div>
+  </div>
+
+<!-- _/_blog_sidecard.tx end -->

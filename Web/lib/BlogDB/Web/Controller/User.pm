@@ -5,6 +5,10 @@ use Mojo::Base 'Mojolicious::Controller', -signatures;
 # User to show is :name
 sub get_user ($c) {
     $c->set_template( 'user/index' );
+    
+    $c->stash->{profile} = $c->db->resultset('Person')->find({
+        username => $c->param('name'),
+    });
 
 }
 
@@ -13,11 +17,38 @@ sub get_user ($c) {
 sub post_follow ($c) {
     $c->set_template( 'user/index' );
 
+
+    my $follow = $c->db->resultset('Person')->find({
+        id => $c->param('person_id'),
+    });
+
+    return 0 unless $follow;
+
+    # TODO: Throw an error if we don't have {person}->id, or $blog.
+    $c->stash->{person}->create_related('person_follow_person_maps_follow', {
+        person_id => $c->stash->{person}->id,
+        follow_id => $follow->id,
+    });
+
+    $c->redirect_to( $c->url_for( 'user', name => $follow->username ) );
 }
 
-sub post_unfollow ($c) {
-    $c->set_template( 'user/index' );
 
+sub post_unfollow ($c) {
+    my $follow = $c->db->resultset('Person')->find({
+        id => $c->param('person_id'),
+    });
+
+    return 0 unless $follow;
+
+    # TODO: Throw an error if we don't have {person}->id, or $blog.
+
+    $c->db->resultset('PersonFollowPersonMap')->search({
+        person_id => $c->stash->{person}->id,
+        follow_id => $follow->id,
+    })->delete;
+    
+    $c->redirect_to( $c->url_for( 'user', name => $follow->username ) );
 }
 
 # Set settings for currently logged in user.

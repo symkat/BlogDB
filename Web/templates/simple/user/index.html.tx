@@ -1,0 +1,41 @@
+%%  cascade simple::_::layout { title => 'People ' ~ $profile.username,
+%%      
+%%  }
+
+%%  override panel -> {
+
+    <div class="row">
+        <div class="col">
+            <img src="https://www.gravatar.com/avatar/[% $profile.email_hash %]" />
+        </div>
+        <div class="col">
+            <h2>[% $profile.username %]</h2>
+        </div>
+        <div class="col">
+%%              if ( $person.is_following_person( $profile.id )) {
+                <form style="display: inline" method="post" action="[% $c.url_for( 'do_unfollow_user' ) %]">
+                    <input type="hidden" name="person_id" value="[% $profile.id %]">
+                    <button class="btn btn-outline-success" type="submit">Unfollow</button>
+                </form>
+%%              } else {
+                <form style="display: inline" method="post" action="[% $c.url_for( 'do_follow_user' ) %]">
+                    <input type="hidden" name="person_id" value="[% $profile.id %]">
+                    <button class="btn btn-outline-success" type="submit">Follow</button>
+                </form>
+%%              }
+
+        </div>
+    </div>
+    
+    <div style="margin-top: 3em; margin-bottom: 2em" class="row">
+        <hr />
+    </div>
+    <div class="row">
+%%      for $profile.get_followed_blogs -> $blog {
+%%          include 'simple/_/_blog_sidecard.tx' { blog => $blog };
+%%      }
+    </div>
+
+
+
+%%  }

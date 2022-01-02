@@ -158,9 +158,9 @@ sub startup ($self) {
     $r->post( '/logout'       )->to( 'Root#post_logout'  )->name('do_logout'         );
 
     # /user/ routes
-    #$r->get    ( '/user/:name'            )->to( 'User#get_user'     )->name( 'user'             );
-    #$auth->post( '/user/:name/follow'     )->to( 'User#post_follow'  )->name( 'do_follow_user'   );
-    #$auth->post( '/user/:name/unfollow'   )->to( 'User#post_unfollow')->name( 'do_unfollow_user' );
+    $r->get    ( '/user/:name'            )->to( 'User#get_user'     )->name( 'user'             );
+    $auth->post( '/user/:name/follow'     )->to( 'User#post_follow'  )->name( 'do_follow_user'   );
+    $auth->post( '/user/:name/unfollow'   )->to( 'User#post_unfollow')->name( 'do_unfollow_user' );
     $auth->get ( '/user/settings'            )->to( 'User#get_settings'         )->name( 'user_settings'         );
     $auth->post( '/user/settings'            )->to( 'User#post_settings'        )->name( 'do_user_settings'        );
     $auth->get ( '/user/settings/email'      )->to( 'User#get_settings_email'   )->name( 'user_settings_email'   );

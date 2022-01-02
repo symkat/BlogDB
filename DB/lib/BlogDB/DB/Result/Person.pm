@@ -336,6 +336,18 @@ sub is_following_blog {
     return $count >= 1 ? 1 : 0;
 }
 
+sub is_following_person {
+    my ( $self, $person_id ) = @_;
+
+    return 0 unless $person_id;
+
+    my $count = $self->search_related('person_follow_person_maps_follow', {
+        follow_id => $person_id,
+    })->count;
+
+    return $count >= 1 ? 1 : 0;
+}
+
 sub get_followed_blogs {
     my ( $self ) = @_;
 
@@ -343,5 +355,15 @@ sub get_followed_blogs {
         $_->blog
     } $self->search_related('person_follow_blog_maps')->all ];
 }
+
+use Digest::MD5 qw( md5_hex );
+
+sub email_hash {
+  my ( $self ) = @_;
+
+  return md5_hex( lc( $self->email ));
+  
+}
+
 
 1;
