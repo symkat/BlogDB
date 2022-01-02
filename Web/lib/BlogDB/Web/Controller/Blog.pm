@@ -356,6 +356,7 @@ sub post_publish_new_blog ($c) {
         $tag->delete;
     }
     $pb->search_related('pending_blog_entries')->delete;
+    $pb->search_related('pending_blog_settings')->delete;
     $pb->delete;
 
     $c->minion->enqueue( populate_blog_entries    => [ $blog->id, 'prod' ]);
