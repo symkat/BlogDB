@@ -23,6 +23,16 @@ sub recent_entries {
         )->all;
     }
 
+    # If we are limited to a user's followed blogs, then we're going
+    # to turn that into a query as well.
+    if ( $opt->{limit_to_person_id} ) {
+        push @limit_ids, map { 
+            $_->blog_id 
+        } $self->result_source->schema->resultset('PersonFollowBlogMap')->search(
+            { person_id => $opt->{limit_to_person_id} },
+        )->all;
+    }
+
 
     return $self->search({
         ( $opt->{filter_adult} ? ( 'blog.is_adult' => 0 ) : () ),

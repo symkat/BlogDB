@@ -24,9 +24,31 @@ sub get_homepage ($c) {
     if ( defined $c->param( 'cva_setting') ) {
         $c->session->{cva_setting} = $c->param('cva_setting');
     } 
+
+    my $is_user_feed = 0;
+    if ( $c->param('view') and $c->param('view') eq 'feed' ) {
+        $is_user_feed = 1;
+    }
+
+    my $page_number = $c->stash->{page}{number} = $c->param('page') || 1;
+    $c->stash->{page}{has_prev} = 1 if $page_number >= 2;
+    $c->stash->{page}{prev} = $page_number - 1;
+    $c->stash->{page}{next} = $page_number + 1;
     
     push @{$c->stash->{entries}}, $c->db->resultset('BlogEntry')->recent_entries({
-        filter_adult => ! $c->stash->{can_view_adult},
+        filter_adult       => ! $c->stash->{can_view_adult},
+
+        ( $page_number
+            ? ( page_number => $page_number )
+            : ()
+        ),
+
+        # Should we only show the user's followed things?
+        ( $is_user_feed 
+            ? ( limit_to_person_id => $c->stash->{person}->id )
+            : ( )
+        ),
+
     }) unless exists $c->stash->{entries};
 
     push @{$c->stash->{blogs}}, $c->db->resultset('Blog')->search({

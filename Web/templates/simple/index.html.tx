@@ -4,14 +4,33 @@
 
 %%  override panel -> {
 
-<h3>Recent Posts</h3>
-%%      for $entries -> $entry {
-%%          include 'simple/_/_entry_card.tx' { entry => $entry };
-%%      }
+    <div class="row" style="margin-bottom: 2em">
+        <ul class="nav nav-tabs">
+%%          if ( $person ) {
+%%              if ( $c.param('view') == 'feed' ) {
+                    <li class="nav-item"><a class="nav-link active" href="[% $c.url_for( 'homepage' ).query( 'view', 'feed') %]">My Feed</a></li>
+%%              } else {
+                    <li class="nav-item"><a class="nav-link" href="[% $c.url_for( 'homepage' ).query( 'view', 'feed') %]">My Feed</a></li>
+%%              }
+%%          }
 
-<div class="row" style="margin-top: 2em; margin-bottom: 1em"><hr /></div>
+%%          if ( ! $c.param('view') ) {
+                <li class="nav-item"><a class="nav-link active" href="[% $c.url_for( 'homepage' ) %]">Recent Entries</a></li>
+%%          } else {
+                <li class="nav-item"><a class="nav-link" href="[% $c.url_for( 'homepage' ) %]">Recent Entries</a></li>
+%%          }
 
-<h3>Collected Blogs</h3>
+%%          if ( $c.param('view') == 'blogs' ) {
+                <li class="nav-item"><a class="nav-link active" href="[% $c.url_for( 'homepage' ).query( 'view', 'blogs') %]">Blogs</a></li>
+%%          } else {
+                <li class="nav-item"><a class="nav-link" href="[% $c.url_for( 'homepage' ).query( 'view', 'blogs') %]">Blogs</a></li>
+%%          }
+
+        </ul>
+    </div>
+
+
+%%  if ( $c.param('view') == 'blogs' ) {
 %%      for $blogs -> $blog {
 %%              if ( $~blog.index % 2 == 0 ) {
                     <div class="row">
@@ -29,6 +48,21 @@
                     </div>
 %%             }
 %%      }
+%%  } else {
+%%      for $entries -> $entry {
+%%          include 'simple/_/_entry_card.tx' { entry => $entry };
+%%      }
+%%  }
+
+    <nav aria-label="Pagination">
+        <hr class="my-0" />
+        <ul class="pagination justify-content-center my-4">
+            <li class="page-item [% $page.has_prev ? '' : ' disabled'%]"><a class="page-link" href="[% $c.url_with.query({'page', $page.prev}) %]">&larr; Prev</a></li>
+            <li class="page-item disabled"><a class="page-link" href="#!">This is page #[% $page.number %]</a></li>
+            <li class="page-item"><a class="page-link" href="[% $c.url_with.query({'page', $page.next}) %]">Next &rarr;</a></li>
+
+        </ul>
+    </nav>
 
 %%#    <nav aria-label="Pagination">
 %%#        <hr class="my-0" />
