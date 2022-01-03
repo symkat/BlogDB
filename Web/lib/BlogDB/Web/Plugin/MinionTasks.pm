@@ -166,7 +166,7 @@ sub register ( $self, $app, $config ) {
 
         return if $last_post_time eq $old_time;
 
-        $job->minion->enqueue( populate_blog_screenshot => [ $blog_id, 'pending' ]);
+        $job->minion->enqueue( populate_blog_screenshot => [ $blog_id, 'prod' ]);
     });
 }
 
