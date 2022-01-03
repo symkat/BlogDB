@@ -3,6 +3,7 @@ use Moo;
 use Mojo::Feed;
 use LWP::UserAgent;
 use HTML::TreeBuilder;
+use Try::Tiny;
 use URI;
 
 has ua => (
@@ -93,6 +94,7 @@ sub rss_url {
         /feed.rss
         /feed.atom
         /feeds/posts/default
+        /rss.xml
     ));
 
     foreach my $path ( @paths ) {
@@ -107,13 +109,19 @@ sub rss_url {
     return undef;
 }
 
+
 sub is_valid_rss {
     my ( $self, $rss_url ) = @_;
     
-    my $feed = Mojo::Feed->new( url => $rss_url );
+    my $feed = try { 
+        Mojo::Feed->new( url => $rss_url ) 
+    } catch { 
+        undef 
+    };
+
+    return unless $feed;
 
     return $feed->url if $feed->is_valid;
-    return undef;
 }
 
 1;
