@@ -88,15 +88,12 @@ sub register ( $self, $app, $config ) {
 
         my $data = BlogDB::Scanner->scan( $blog->url );
 
+        $blog->url    ( $data->uri         );
         $blog->tagline( $data->description );
         $blog->title  ( $data->title       );
         $blog->rss_url( $data->rss_url     );
 
         $blog->update;
-
-        if ( $blog->rss_url ) {
-            $job->app->minion->enqueue('populate_blog_entries' => [ $blog->id, $type ] );
-        }
         
         $blog->setting( 'minion-data_scrape' => time );
     });
@@ -112,7 +109,13 @@ sub register ( $self, $app, $config ) {
             die "Error: Failed to load blog from $rs1 for id $blog_id";
         }
 
-        return unless $blog->rss_url;
+        # Don't continue if we don't have an RSS URL, however update
+        # the time so the front end switches to show the edit page after
+        # failure to get rss feeds.
+        if ( ! $blog->rss_url ) {
+            $blog->setting( 'minion-rss_scrape' => time );
+            return;
+        }
 
         my $feed = Mojo::Feed->new( url => $blog->rss_url );
 
@@ -132,8 +135,38 @@ sub register ( $self, $app, $config ) {
 
         $blog->last_updated( DateTime->now );
         $blog->update;
-        
         $blog->setting( 'minion-rss_scrape' => time );
+    });
+
+    $app->minion->add_task( initial_blog_import => sub ( $job, $blog_id ) {
+        my $dep_id = $job->minion->enqueue( populate_blog_data => [ $blog_id, 'pending' ]);
+        
+        $job->minion->enqueue( populate_blog_screenshot => [ $blog_id, 'pending' ], {
+            parents => [ $dep_id ],
+        });
+
+        $job->minion->enqueue( populate_blog_entries => [ $blog_id, 'pending' ], {
+            parents => [ $dep_id ],
+        });
+
+    });
+
+    $app->minion->add_task( refresh_blog_data => sub ( $job, $blog_id ) {
+        my $last_post_time = $job->app->db->resultset('Blog')->find($blog_id)->last_post->publish_date;
+
+        my $id = $job->minion->enqueue( populate_blog_entries => [ $blog_id, 'prod' ]);
+
+        $job->minion->enqueue( screenshot_on_update => [ $blog_id, $last_post_time ], {
+            parents => [ $id ],
+        });
+    });
+    
+    $app->minion->add_task( screenshot_on_update => sub ( $job, $blog_id, $old_time ) {
+        my $last_post_time = $job->app->db->resultset('Blog')->find($blog_id)->last_post->publish_date;
+
+        return if $last_post_time eq $old_time;
+
+        $job->minion->enqueue( populate_blog_screenshot => [ $blog_id, 'pending' ]);
     });
 }
 

@@ -308,10 +308,18 @@ sub formatted_about {
   return $str;
 }
 
+sub last_post {
+  my ( $self ) = @_;
+
+  return $self->search_related('blog_entries', { }, 
+    { order_by => { -desc => 'publish_date' } } 
+  )->first;
+}
+
 sub published_ago {
   my ( $self ) = @_;
 
-  my $post = $self->search_related('blog_entries', { }, { order_by => { -desc => 'publish_date' } } )->first;
+  my $post = $self->last_post;
 
   return 'never before?' unless $post;
 

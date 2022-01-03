@@ -7,9 +7,14 @@
         <div class="card mb-4">
             <div class="card-header">Actions</div>
             <div class="card-body">
-                <form method="post" action="[% $c.url_for( 'do_publish_new_blog', id => $blog.id ) %]">
-                    <button type="submit" class="btn btn-primary float-end">Publish Blog</button>
+                <form method="post" action="[% $c.url_for( 'do_delete_new_blog', id => $blog.id ) %]">
+                    <button type="submit" class="btn btn-danger float-end">Delete Blog</button>
                 </form>
+
+                <form method="post" action="[% $c.url_for( 'do_publish_new_blog', id => $blog.id ) %]">
+                    <button type="submit" class="btn btn-primary">Publish Blog</button>
+                </form>
+
             </div>
         </div>
 %%      }

@@ -201,10 +201,7 @@ sub post_new_blog ($c) {
         ),
     });
 
-    $c->minion->enqueue( populate_blog_screenshot => [ $blog->id, 'pending' ]);
-
-    # Get data from cralwer
-    $c->minion->enqueue( populate_blog_data => [ $blog->id, 'pending' ]);
+    $c->minion->enqueue( initial_blog_import => [ $blog->id ] );
 
     $c->redirect_to( $c->url_for( 'edit_new_blog', id => $blog->id ) );
 }
@@ -322,6 +319,29 @@ sub post_edit_new_blog ($c) {
 
     # Send the user back to the standard GET path.
     $c->redirect_to( $c->url_for( 'edit_new_blog', id => $blog->id ) );
+}
+
+sub post_delete_new_blog ($c) {
+    my $pb = $c->db->resultset('PendingBlog')->find( $c->param('id') );
+
+    push @{$c->stash->{errors}}, 'No such blog id.'
+        unless $pb;
+
+    push @{$c->stash->{errors}}, 'Not Authorized.'
+        unless $c->stash->{person}->setting( 'can_manage_blogs' );
+
+    if ( @{$c->stash->{errors} || []} ) {
+        $c->redirect_to( $c->url_for( 'homepage' ) );
+        return 0;
+    }
+
+    $pb->search_related('pending_blog_tag_maps')->delete;
+    $pb->search_related('pending_blog_entries')->delete;
+    $pb->search_related('pending_blog_settings')->delete;
+    $pb->delete;
+
+    $c->redirect_to( $c->url_for( 'new_blogs' ) );
+
 }
 
 sub post_publish_new_blog ($c) {
