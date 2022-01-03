@@ -30,9 +30,21 @@
     <div style="margin-top: 3em; margin-bottom: 2em" class="row">
         <hr />
     </div>
+
+    <div class="row">
+        [% $profile_about %]
+    </div>
+
+    <div style="margin-top: 3em; margin-bottom: 2em" class="row">
+        <hr />
+    </div>
+
+
+
     <div class="row">
 %%      for $profile.get_followed_blogs -> $blog {
 %%          include 'simple/_/_blog_sidecard.tx' { blog => $blog };
+            <div style="margin-top: 2em" class="row"></div>
 %%      }
     </div>
 

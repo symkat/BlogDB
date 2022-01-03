@@ -10,6 +10,8 @@ sub get_user ($c) {
         username => $c->param('name'),
     });
 
+    $c->stash->{profile_about} = $c->stash->{profile}->setting('user_profile');
+
 }
 
 # Do follow/unfollow for currently logged in user.
@@ -55,8 +57,8 @@ sub post_unfollow ($c) {
 sub get_settings ($c) {
     $c->set_template( 'user/settings' );
 
-    my $is_adult = $c->stash->{form_adult} = $c->stash->{person}->setting('can_view_adult');
-
+    my $is_adult = $c->stash->{form_adult}   = $c->stash->{person}->setting('can_view_adult');
+    my $profile  = $c->stash->{form_profile} = $c->stash->{person}->setting('user_profile');
 
 }
 
@@ -75,8 +77,10 @@ sub post_settings ($c) {
     $c->set_template( 'user/settings' );
 
     my $is_adult = $c->stash->{form_adult} = $c->param('is_adult') ? 1 : 0;
+    my $profile  = $c->stash->{form_profile} = $c->param('profile');
 
     $c->stash->{person}->setting( can_view_adult => $is_adult );
+    $c->stash->{person}->setting( user_profile => $profile );
 
     $c->redirect_to( $c->url_for( 'user_settings'));
 

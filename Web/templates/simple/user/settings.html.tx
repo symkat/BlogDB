@@ -41,6 +41,11 @@
                             <label class="form-check-label" for="is_adult_bool"><strong>View adult content</strong> See blogs and tags that have been marked as adult content.</label>
                         </div>
 
+                        <div style="margin-top: 1em"></div>
+
+                        <label for="profile" class="form-label">Your Public Profile</label>
+                        <textarea class="form-control" name="profile" id="profile" rows="3">[% $form_profile %]</textarea>
+
                         <!-- Submit-->
                         <button type="submit" style="margin-top: 0.5em" class="btn btn-primary float-end">Update</button>
                     </form>
