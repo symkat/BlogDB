@@ -13,6 +13,7 @@
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="/css/styles.css" rel="stylesheet" />
+        <script defer data-domain="blogdb.org" src="https://plausible.io/js/plausible.js"></script>
     </head>
     <body>
         <!-- Responsive navbar-->
