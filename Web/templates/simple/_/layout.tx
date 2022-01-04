@@ -28,8 +28,8 @@
 %%                      } else {
                         <li class="nav-item"><a class="nav-link" aria-current="page" href="[% $c.url_for( 'homepage' ) %]">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="[% $c.url_for('register') %]">Register</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#!">Contact</a></li>
 %%                      }
+                        <li class="nav-item"><a class="nav-link" href="[% $c.url_for( 'about') %]">About</a></li>
                         <li class="nav-item"><a class="nav-link active" href="[% $c.url_for( 'view_random_blog' ) %]">Random Blog Button</a></li>
                     </ul>
                 </div>

@@ -146,6 +146,8 @@ sub startup ($self) {
 
     # Home Page
     $r->get('/')->to( 'Root#get_homepage' )->name('homepage');
+    
+    $r->get('/about')->to( 'Root#get_about' )->name('about');
 
     # Standard user stuff: register, forgot password, login and logout.
     $r->get ( '/register'     )->to( 'Root#get_register' )->name('register'          );

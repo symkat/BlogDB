@@ -1,0 +1,13 @@
+%%  cascade simple::_::layout { title => 'About',
+%%      
+%%  }
+
+%%  override panel -> {
+
+    <p>BlogDB is intended to showcase a collection of blogs from around the Internet.  Those who register accounts can follow blogs to get a feed of recent blog posts.</p>
+
+    <p>The initial design and programming was documented <a href="https://modfoss.com/building-blogdb.html">in a blog post</a>, and the code is available on <a href="https://github.com/symkat/BlogDB">GitHub</a></p>
+
+    <p>You can get in touch with me at symkat@symkat.com</p>
+
+%% }

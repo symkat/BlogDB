@@ -66,6 +66,11 @@ sub get_homepage ($c) {
 
 }
 
+sub get_about ($c) {
+    $c->set_template( 'about' );
+
+}
+
 sub get_register ($c) {
     $c->set_template( 'register' );
 
