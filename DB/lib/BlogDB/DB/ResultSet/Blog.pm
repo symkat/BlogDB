@@ -17,19 +17,21 @@ sub recent_entries {
         
         if ( $tag ) {
             push @results, map { $_->blog } $tag->search_related('blog_tag_maps', {
-                ( $opt->{filter_adult} ? ( 'is_adult' => 0 ) : () ),
+                ( $opt->{filter_adult} ? ( 'blog.is_adult' => 0 ) : () ),
             }, {
-                order_by => { -desc => 'last_updated'},
+                order_by => { -desc => 'blog.last_updated'},
                 rows     => $opt->{rows_per_page},
                 offset   => ( $opt->{page_number} - 1 )  * $opt->{rows_per_page},
+                prefetch => 'blog',
             })->all;
 
             my $has_next_page = $tag->search_related('blog_tag_maps', {
                 ( $opt->{filter_adult} ? ( 'is_adult' => 0 ) : () ),
             }, {
-                order_by => { -desc => 'last_updated'},
+                order_by => { -desc => 'blog.last_updated'},
                 rows     => $opt->{rows_per_page},
                 offset   => $opt->{page_number}  * $opt->{rows_per_page},
+                prefetch => 'blog',
             })->count;
 
             return {
