@@ -1,7 +1,9 @@
 package BlogDB::Scanner;
 use Moo;
+use Mojo::Feed;
 use LWP::UserAgent;
 use HTML::TreeBuilder;
+use URI;
 
 has ua => (
     is       => 'ro',
@@ -17,6 +19,18 @@ has url  => ( is => 'rw' );
 has raw  => ( is => 'rw' );
 has res  => ( is => 'rw' );
 has tree => ( is => 'rw' );
+
+has uri  => (
+    is       => 'ro',
+    lazy     => 1,
+    init_arg => undef,
+    builder  => sub {
+        my ( $self ) = @_;
+
+        my $uri = URI->new( $self->url );
+        return $uri->canonical->as_string;
+    },
+);
 
 sub scan {
     my ( $self, $url ) = @_;
@@ -40,8 +54,11 @@ sub _find_meta_property {
         $_[0]                   and 
         $_[0]->can('attr')      and 
         $_[0]->attr('property') and 
+        $_[0]->attr('content')  and
         $_[0]->attr('property') eq $property
     });
+
+    return undef unless $elem;
 
     return $elem->attr('content');
 
@@ -50,31 +67,53 @@ sub _find_meta_property {
 sub title {
     my ( $self ) = @_;
 
-    return $self->_find_meta_property( 'og:title' );
+    my ( $first ) = map {
+        $self->_find_meta_property( $_ )
+    } ( qw( og:title title ) );
+
+    return $first;
 }
         
 sub description {
     my ( $self ) = @_;
 
-    return $self->_find_meta_property( 'og:description' );
+    my ( $first ) = map {
+        $self->_find_meta_property( $_ )
+    } ( qw( og:description description ) );
+
+    return $first;
 }
 
+# Find the RSS URL For This Website
 sub rss_url {
     my ( $self ) = @_;
 
-    # Try /feed - WordPress
-    my $res = $self->ua->get( $self->url . "/feed" );
-    if ( $res->is_success and $res->content_type eq 'application/rss+xml' ) {
-        return $self->url . "/feed";
-    }
-    
-    # Try /feed/posts/default - Blogger
-    $res = $self->ua->get( $self->url . "/feeds/posts/default" );
-    if ( $res->is_success and $res->content_type eq 'application/atom+xml' ) {
-        return $self->url . "/feeds/posts/default";
+    my @paths = (qw(
+        /feed
+        /feed.rss
+        /feed.atom
+        /feeds/posts/default
+    ));
+
+    foreach my $path ( @paths ) {
+        my $rss_url = $self->is_valid_rss($self->uri . $path);
+
+        # We found a valid and working RSS stream.
+        if ( $rss_url ) {
+            return $rss_url;
+        }
     }
 
-    return "";
+    return undef;
+}
+
+sub is_valid_rss {
+    my ( $self, $rss_url ) = @_;
+    
+    my $feed = Mojo::Feed->new( url => $rss_url );
+
+    return $feed->url if $feed->is_valid;
+    return undef;
 }
 
 1;
