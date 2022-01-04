@@ -120,14 +120,14 @@
                                 <div class="col-sm-6">
                                     <ul class="list-unstyled mb-0">
 %%                                  for $tags_a -> $tag {
-                                        <li><a href="[% $c.url_for('homepage').query( 'tag', $tag.name ) %]">#[% $tag.name %]</a></li>
+                                        <li><a href="[% $c.url_for('blogs').query( 'tag', $tag.name ) %]">#[% $tag.name %]</a></li>
 %%                                  }
                                     </ul>
                                 </div>
                                 <div class="col-sm-6">
                                     <ul class="list-unstyled mb-0">
 %%                                  for $tags_b -> $tag {
-                                        <li><a href="[% $c.url_for('homepage').query( 'tag', $tag.name ) %]">#[% $tag.name %]</a></li>
+                                        <li><a href="[% $c.url_for('blogs').query( 'tag', $tag.name ) %]">#[% $tag.name %]</a></li>
 %%                                  }
                                     </ul>
                                 </div>

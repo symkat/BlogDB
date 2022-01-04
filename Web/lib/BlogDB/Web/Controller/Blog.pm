@@ -16,6 +16,36 @@ sub _slug_to_id ($self, $slug) {
     return "";
 }
 
+sub get_blogs ( $c ) {
+    $c->set_template( 'blog/index' );
+
+    my $page_number = $c->stash->{page}{number} = $c->param('page') || 1;
+    $c->stash->{page}{has_prev} = 1 if $page_number >= 2;
+    $c->stash->{page}{prev} = $page_number - 1;
+    $c->stash->{page}{next} = $page_number + 1;
+
+    my $recent_entries = $c->db->resultset('Blog')->recent_entries({
+        filter_adult       => ! $c->stash->{can_view_adult},
+        rows_per_page      => 1,
+        ( $page_number
+            ? ( page_number => $page_number )
+            : ()
+        ),
+        ( $c->param('tag') ? ( has_tag => $c->param('tag') ) : ()),
+    });
+    
+    push @{$c->stash->{blogs}}, @{$recent_entries->{results}};
+    $c->stash->{page}{has_next} = $recent_entries->{has_next_page};
+
+    push @{$c->stash->{tags_a}},  grep  { $_->id % 2 == 1 } $c->db->resultset('Tag')->search({
+        ( ! $c->stash->{can_view_adult} ? ( is_adult => 0 ) : () ),
+    })->all;
+
+    push @{$c->stash->{tags_b}},  grep  { $_->id % 2 == 0 } $c->db->resultset('Tag')->search({
+        ( ! $c->stash->{can_view_adult} ? ( is_adult => 0 ) : () ),
+    })->all;
+}
+
 sub get_view_blog ($c) {
     $c->set_template( 'blog/item' );
 
@@ -25,7 +55,7 @@ sub get_view_blog ($c) {
 }
 
 sub get_view_random_blog ( $c ) {
-    my @blogs = $c->db->resultset('Blog')->all;
+    my @blogs = $c->db->resultset('Blog')->search({ is_adult => 0 })->all;
 
     my $blog = $blogs[int rand scalar @blogs];
 

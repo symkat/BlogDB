@@ -1,0 +1,58 @@
+%%  cascade simple::_::layout { title => 'Blog Listing',
+%%      
+%%  }
+
+%%  override panel -> {
+
+    <div class="row" style="margin-bottom: 2em">
+        <ul class="nav nav-tabs">
+%%          if ( $person ) {
+                <li class="nav-item"><a class="nav-link" href="[% $c.url_for( 'homepage' ).query( 'view', 'feed') %]">My Feed</a></li>
+%%          }
+            <li class="nav-item"><a class="nav-link" href="[% $c.url_for( 'homepage' ) %]">Recent Entries</a></li>
+            <li class="nav-item"><a class="nav-link active" href="[% $c.url_for( 'blogs' ) %]">Blogs</a></li>
+        </ul>
+    </div>
+
+
+%%  for $blogs -> $blog {
+%%          if ( $~blog.index % 2 == 0 ) {
+                <div class="row">
+                    <div class="col-lg-6">
+%%                      include 'simple/_/_blog_card.tx' { blog => $blog };
+                    </div>
+%%              if ( $~blog.is_last ) { # Display 
+%%                  # <!-- If we end the loop here, we need to close <row>.-->
+                    </div>
+%%              }
+%%          } else {    
+                    <div class="col-lg-6">
+%%                  include 'simple/_/_blog_card.tx' { blog => $blog };
+                    </div>
+                </div>
+%%         }
+%%  }
+
+    <nav aria-label="Pagination">
+        <hr class="my-0" />
+        <ul class="pagination justify-content-center my-4">
+            <li class="page-item [% $page.has_prev ? '' : ' disabled' %]"><a class="page-link" href="[% $c.url_with.query({'page', $page.prev}) %]">&larr; Prev</a></li>
+            <li class="page-item disabled"><a class="page-link" href="#!">This is page #[% $page.number %]</a></li>
+            <li class="page-item [% $page.has_next ? '' : ' disabled' %]"><a class="page-link" href="[% $c.url_with.query({'page', $page.next}) %]">Next &rarr;</a></li>
+        </ul>
+    </nav>
+
+%%#    <nav aria-label="Pagination">
+%%#        <hr class="my-0" />
+%%#        <ul class="pagination justify-content-center my-4">
+%%#            <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Newer</a></li>
+%%#            <li class="page-item active" aria-current="page"><a class="page-link" href="#!">1</a></li>
+%%#            <li class="page-item"><a class="page-link" href="#!">2</a></li>
+%%#            <li class="page-item"><a class="page-link" href="#!">3</a></li>
+%%#            <li class="page-item disabled"><a class="page-link" href="#!">...</a></li>
+%%#            <li class="page-item"><a class="page-link" href="#!">15</a></li>
+%%#            <li class="page-item"><a class="page-link" href="#!">Older</a></li>
+%%#        </ul>
+%%#    </nav>
+
+%% }

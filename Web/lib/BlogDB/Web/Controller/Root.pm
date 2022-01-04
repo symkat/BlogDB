@@ -35,26 +35,27 @@ sub get_homepage ($c) {
     $c->stash->{page}{prev} = $page_number - 1;
     $c->stash->{page}{next} = $page_number + 1;
     
-    push @{$c->stash->{entries}}, $c->db->resultset('BlogEntry')->recent_entries({
-        filter_adult       => ! $c->stash->{can_view_adult},
+    if ( ! $c->stash->{entries} ) { 
+        my $recent_entries = $c->db->resultset('BlogEntry')->recent_entries({
+            filter_adult       => ! $c->stash->{can_view_adult},
+            rows_per_page      => 25,
 
-        ( $page_number
-            ? ( page_number => $page_number )
-            : ()
-        ),
+            ( $page_number
+                ? ( page_number => $page_number )
+                : ()
+            ),
 
-        # Should we only show the user's followed things?
-        ( $is_user_feed 
-            ? ( limit_to_person_id => $c->stash->{person}->id )
-            : ( )
-        ),
+            # Should we only show the user's followed things?
+            ( $is_user_feed 
+                ? ( limit_to_person_id => $c->stash->{person}->id )
+                : ( )
+            ),
 
-    }) unless exists $c->stash->{entries};
-
-    push @{$c->stash->{blogs}}, $c->db->resultset('Blog')->search({
-        ( ! $c->stash->{can_view_adult} ? ( is_adult => 0 ) : () ),
-    })->all unless exists $c->stash->{blogs};
-
+        });
+        push @{$c->stash->{entries}}, @{$recent_entries->{results}};
+        $c->stash->{page}{has_next} = $recent_entries->{has_next_page};
+    }
+    
     push @{$c->stash->{tags_a}},  grep  { $_->id % 2 == 1 } $c->db->resultset('Tag')->search({
         ( ! $c->stash->{can_view_adult} ? ( is_adult => 0 ) : () ),
     })->all;

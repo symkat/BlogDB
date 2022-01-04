@@ -172,6 +172,7 @@ sub startup ($self) {
     #$auth->post( '/user/settings/about'   )->to( 'User#post_about'   )->name( 'do_user_about'    );
 
     # /blog/ routes
+    $r->get    ( '/blogs'                 )->to( 'Blog#get_blogs'            )->name( 'blogs'               ); # List blogs.
     $r->get    ( '/blog/new'              )->to( 'Blog#get_new_blogs'        )->name( 'new_blogs'           ); # List new blogs.
     $r->post   ( '/blog/new'              )->to( 'Blog#post_new_blog'        )->name( 'do_new_blog'         ); # Create a new blog.
     $r->get    ( '/blog/new/:id'          )->to( 'Blog#get_edit_new_blog'    )->name( 'edit_new_blog'       ); # Show edit a new blog page.

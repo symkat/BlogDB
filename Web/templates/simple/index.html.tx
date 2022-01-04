@@ -21,9 +21,9 @@
 %%          }
 
 %%          if ( $c.param('view') == 'blogs' ) {
-                <li class="nav-item"><a class="nav-link active" href="[% $c.url_for( 'homepage' ).query( 'view', 'blogs') %]">Blogs</a></li>
+                <li class="nav-item"><a class="nav-link active" href="[% $c.url_for( 'blogs' ) %]">Blogs</a></li>
 %%          } else {
-                <li class="nav-item"><a class="nav-link" href="[% $c.url_for( 'homepage' ).query( 'view', 'blogs') %]">Blogs</a></li>
+                <li class="nav-item"><a class="nav-link" href="[% $c.url_for( 'blogs' ) %]">Blogs</a></li>
 %%          }
 
         </ul>
@@ -57,10 +57,9 @@
     <nav aria-label="Pagination">
         <hr class="my-0" />
         <ul class="pagination justify-content-center my-4">
-            <li class="page-item [% $page.has_prev ? '' : ' disabled'%]"><a class="page-link" href="[% $c.url_with.query({'page', $page.prev}) %]">&larr; Prev</a></li>
+            <li class="page-item [% $page.has_prev ? '' : ' disabled' %]"><a class="page-link" href="[% $c.url_with.query({'page', $page.prev}) %]">&larr; Prev</a></li>
             <li class="page-item disabled"><a class="page-link" href="#!">This is page #[% $page.number %]</a></li>
-            <li class="page-item"><a class="page-link" href="[% $c.url_with.query({'page', $page.next}) %]">Next &rarr;</a></li>
-
+            <li class="page-item [% $page.has_next ? '' : ' disabled' %]"><a class="page-link" href="[% $c.url_with.query({'page', $page.next}) %]">Next &rarr;</a></li>
         </ul>
     </nav>
 

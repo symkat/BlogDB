@@ -33,8 +33,8 @@ sub recent_entries {
         )->all;
     }
 
-
-    return $self->search({
+    my @results;
+    push @results, $self->search({
         ( $opt->{filter_adult} ? ( 'blog.is_adult' => 0 ) : () ),
         ( @limit_ids ? ( blog_id => { -in => [ @limit_ids ] }) : () ),
     }, {
@@ -43,6 +43,23 @@ sub recent_entries {
         offset   => ( $opt->{page_number} - 1 )  * $opt->{rows_per_page},
         prefetch => 'blog',
     })->all;
+
+    # We we have a next page?
+
+    my $has_next_page = $self->search({
+        ( $opt->{filter_adult} ? ( 'blog.is_adult' => 0 ) : () ),
+        ( @limit_ids ? ( blog_id => { -in => [ @limit_ids ] }) : () ),
+    }, {
+        order_by => { -desc => 'publish_date'},
+        rows     => $opt->{rows_per_page},
+        offset   => ( $opt->{page_number} )  * $opt->{rows_per_page},
+        prefetch => 'blog',
+    })->count;
+
+    return {
+        results => \@results,
+        has_next_page => $has_next_page >= 1 ? 1 : 0,
+    };
 
 }
 
