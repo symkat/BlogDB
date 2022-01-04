@@ -60,7 +60,7 @@ sub run {
         } else {
             # TODO: The screengrab stuff should run if there was updates to the blog
             #       entries.
-            $app->minion->enqueue( populate_blog_entries => [ $blog->id, 'prod']);
+            $app->minion->enqueue( refresh_blog_data => [ $blog->id ]);
             $blog->last_updated( DateTime->now );
             $blog->update;
         }
