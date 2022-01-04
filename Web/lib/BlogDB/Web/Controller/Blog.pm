@@ -26,7 +26,7 @@ sub get_blogs ( $c ) {
 
     my $recent_entries = $c->db->resultset('Blog')->recent_entries({
         filter_adult       => ! $c->stash->{can_view_adult},
-        rows_per_page      => 1,
+        rows_per_page      => 25,
         ( $page_number
             ? ( page_number => $page_number )
             : ()
