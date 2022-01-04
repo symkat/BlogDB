@@ -16,21 +16,10 @@
 
 
 %%  for $blogs -> $blog {
-%%          if ( $~blog.index % 2 == 0 ) {
                 <div class="row">
-                    <div class="col-lg-6">
-%%                      include 'simple/_/_blog_card.tx' { blog => $blog };
-                    </div>
-%%              if ( $~blog.is_last ) { # Display 
-%%                  # <!-- If we end the loop here, we need to close <row>.-->
-                    </div>
-%%              }
-%%          } else {    
-                    <div class="col-lg-6">
-%%                  include 'simple/_/_blog_card.tx' { blog => $blog };
-                    </div>
+%%                      include 'simple/_/_blog_sidecard.tx' { blog => $blog };
+                        <div class="row" style="margin-top: 2em"></div>
                 </div>
-%%         }
 %%  }
 
     <nav aria-label="Pagination">
