@@ -62,25 +62,25 @@ sub _find_meta_property {
     return undef unless $elem;
 
     return $elem->attr('content');
-
 }
 
 sub title {
     my ( $self ) = @_;
 
-    my ( $first ) = map {
+    my ( $first ) = grep { defined } map {
         $self->_find_meta_property( $_ )
     } ( qw( og:title title ) );
 
     return $first;
 }
-        
+
+# Find description -- fall back to title
 sub description {
     my ( $self ) = @_;
 
-    my ( $first ) = map {
+    my ( $first ) = grep { defined } map {
         $self->_find_meta_property( $_ )
-    } ( qw( og:description description ) );
+    } ( qw( og:description description og:title title ) );
 
     return $first;
 }
@@ -95,6 +95,7 @@ sub rss_url {
         /feed.atom
         /feeds/posts/default
         /rss.xml
+        /atom.xml
     ));
 
     foreach my $path ( @paths ) {
@@ -113,10 +114,9 @@ sub rss_url {
 sub is_valid_rss {
     my ( $self, $rss_url ) = @_;
     
-    my $feed = try { 
-        Mojo::Feed->new( url => $rss_url ) 
-    } catch { 
-        undef 
+    my $feed = try {
+        Mojo::Feed->new( url => $rss_url )->is_valid;
+        Mojo::Feed->new( url => $rss_url );
     };
 
     return unless $feed;
