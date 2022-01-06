@@ -6,20 +6,6 @@ use Data::UUID;
 sub get_homepage ($c) {
     $c->set_template( 'index' );
 
-    # Find blogs by tag.
-    if ( $c->param('tag') ) {
-        push @{$c->stash->{entries}}, $c->db->resultset('BlogEntry')->recent_entries({
-            filter_adult => ! $c->stash->{can_view_adult},
-            has_tag      => $c->param('tag'),
-        });
-
-        my $tag = $c->db->resultset('Tag')->search({ name => $c->param('tag') })->first;
-        if ( $tag ) {
-            push @{$c->stash->{blogs}}, map { $_->blog }
-                $tag->search_related('blog_tag_maps')->all;
-        }
-    }
-
     # Create session cookie via query param on homepage.
     if ( defined $c->param( 'cva_setting') ) {
         $c->session->{cva_setting} = $c->param('cva_setting');
@@ -48,6 +34,12 @@ sub get_homepage ($c) {
             # Should we only show the user's followed things?
             ( $is_user_feed 
                 ? ( limit_to_person_id => $c->stash->{person}->id )
+                : ( )
+            ),
+            
+            # If we have a tag, only show entries that match it.
+            ( $c->param('tag')
+                ? ( has_tag => $c->param('tag') )
                 : ( )
             ),
 
