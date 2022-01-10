@@ -99,7 +99,7 @@
 
                     <!-- Search widget-->
                     <div class="card mb-4">
-                        <div class="card-header">Suggest a blog to be added</div>
+                        <div class="card-header [% $c.param('badurl') == 1 ? 'text-danger' : '' %]">Suggest a blog to be added</div>
                         <div class="card-body">
                             <form method="post" action="[% $c.url_for( 'do_new_blog' ) %]">
                                 <div class="input-group">
@@ -108,8 +108,12 @@
                                 </div>
                             </form>
                         </div>
+%%                      if ( $c.param('badurl') == 1 ) {
+                        <div class="card-footer text-danger">
+                            That doesn't seem to be a valid URL?
+                        </div>
+%%                      }
                     </div>
-
 
 %%                  if ( $tags_a and $tags_b ) {
                     <!-- Tags widget-->

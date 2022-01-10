@@ -1,6 +1,7 @@
 package BlogDB::Web::Controller::Blog;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
 use Data::UUID;
+use URI;
 
 sub _slug_to_id ($self, $slug) {
     # /:id
@@ -210,11 +211,18 @@ sub post_new_blog ($c) {
     my $blog_url = $c->stash->{form_url} = $c->param('url');
 
     # Error Checking - We have all of the information.
-    push @{$c->stash->{errors}}, "URL is required." unless $blog_url;
+    push @{$c->stash->{errors}}, "URL is required."
+        unless $blog_url;
 
-    # TODO: Valid URL?
+    # Valid URL?
+    push @{$c->stash->{errors}}, "URL must be http or https."
+        unless URI->new( $blog_url )->scheme =~ /^https?$/;
 
-    return 0 if $c->stash->{errors};
+    # Send to homepage on error.
+    if ( $c->stash->{errors} ) {
+        $c->redirect_to( $c->url_for( 'homepage' )->query(badurl => 1) );
+        return 0;
+    }
 
     # If an anonymous user submitted the blog, make an edit token
     # for them to use.
