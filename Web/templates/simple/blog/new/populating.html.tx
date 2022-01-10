@@ -11,6 +11,10 @@
 
     <p>This page will refresh until the blog data has been found, and then you will have a chance to edit the final submission.</p>
 
+%%  if ( $person_permissions.can_manage_blogs == 1 ) {
+        <a href="[% $c.url_with.query( 'bypass_dataload_screen', 1 ) %]">Go To Edit Page Anyway</a>
+%%  }
+
     <table class="table" style="margin-top: 2em;" width="100%">
         <tr>
             <th>Item Gathering</th>
