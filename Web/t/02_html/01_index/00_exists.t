@@ -1,4 +1,7 @@
 #!/usr/bin/env perl
+#==
+# Test to ensure / exists and has the correct title.
+#==
 use Mojo::Base '-signatures';
 use BlogDB::Web::Test;
 

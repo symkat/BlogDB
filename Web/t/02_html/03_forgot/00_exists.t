@@ -1,4 +1,7 @@
 #!/usr/bin/env perl
+#==
+# Test to ensure /forgot exists.
+#==
 use Mojo::Base '-signatures';
 use BlogDB::Web::Test;
 
