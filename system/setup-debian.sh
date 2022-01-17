@@ -13,7 +13,7 @@
 #==
 apt-get update -y;
 apt-get upgrade -y;
-apt-get install -y git build-essential cpanminus liblocal-lib-perl expect;
+apt-get install -y git build-essential cpanminus liblocal-lib-perl expect sudo;
 
 #==
 # Install postgresql, some database helpers, and set our DBs up.
