@@ -1,0 +1,30 @@
+#!/usr/bin/env perl
+#==
+# Database Connect - exec psql with the credentials from blogdb.yml to get a prompt.
+#==
+use warnings;
+use strict;
+use DBIx::Class::Schema::Config;
+use CPAN::Meta::YAML;
+
+my ( $file ) = grep { -e $_ } ( qw(
+    /home/blogdb/BlogDB/blogdb.yml
+    /home/vagrant/BlogDB/blogdb.yml
+    blogdb.yml
+    Web/blogdb.yml
+    ../blogdb.yml
+));
+
+open my $lf, '<', $file
+    or die "Failed to open $file for read: $!";
+my $content = do { local $/; <$lf> };
+close $lf;
+
+my $data = CPAN::Meta::YAML->read_string( $content );
+
+my $config = DBIx::Class::Schema::Config->coerce_credentials_from_mojolike(
+    DBIx::Class::Schema::Config->_make_connect_attrs($data->[0]{database}{blogdb})
+);
+
+$ENV{PGPASSWORD} = $config->{password};
+exec qw( psql -h localhost -U blogdb blogdb );
