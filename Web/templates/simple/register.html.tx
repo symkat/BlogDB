@@ -22,26 +22,30 @@
 
             <!-- Registration Handling On RHS -->
             <div class="col">
-                <form method="post" action="[% $c.url_for( 'do_register' ) %]">
+                <form name="register" method="post" action="[% $c.url_for( 'do_register' ) %]">
 %%                  include 'simple/_/form/input.tx' { type => 'text', name => 'username',
+%%                      form  => 'register',
 %%                      title => 'Username',
 %%                      help  => 'Your username is unique, friends can follow you at /user/YourName',
 %%                      value => $form_username,
 %%                  };
 
 %%                  include 'simple/_/form/input.tx' { type => 'email', name => 'email',
+%%                      form  => 'register',
 %%                      title => 'Email address',
 %%                      help  => 'You will need to confirm your email address to post comments.',
 %%                      value => $form_email,
 %%                  };
 
 %%                  include 'simple/_/form/input.tx' { type => 'password', name => 'password',
+%%                      form  => 'register',
 %%                      title => 'Password',
 %%                      help  => 'You will need your password to login.',
 %%                      value => $form_password,
 %%                  };
 
 %%                  include 'simple/_/form/input.tx' { type => 'password', name => 'confirm',
+%%                      form  => 'register',
 %%                      title => 'Confirm password',
 %%                      help  => mark_raw('Just to <strike>annoy you</strike> be sure it is correct.'),
 %%                      value => $form_confirm,

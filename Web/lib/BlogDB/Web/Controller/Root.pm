@@ -80,7 +80,7 @@ sub post_register ($c) {
     push @{$c->stash->{errors}}, "Username is required."         unless $username;
     push @{$c->stash->{errors}}, "Email address is required."    unless $email;
     push @{$c->stash->{errors}}, "Password is required."         unless $password;
-    push @{$c->stash->{errors}}, "Confirm password is required." unless $password;
+    push @{$c->stash->{errors}}, "Confirm password is required." unless $confirm;
 
     # Error Checking - Username conforms to expectations:
     push @{$c->stash->{errors}}, "Usernames must start with a letter and then may contain letters, numbers, underscores and dashes."
@@ -168,7 +168,7 @@ sub post_reset ($c) {
 
     # Error Checking - We have all of the information.
     push @{$c->stash->{errors}}, "Password is required."               unless $password;
-    push @{$c->stash->{errors}}, "Confirm password is required."       unless $password;
+    push @{$c->stash->{errors}}, "Confirm password is required."       unless $confirm;
     push @{$c->stash->{errors}}, "Password & Confirmation must match." unless $password eq $confirm;
     push @{$c->stash->{errors}}, "Password must be at least 7 chars."  unless 7 < length($password);
 
@@ -207,19 +207,34 @@ sub post_login ($c) {
     my $password = $c->stash->{form_password} = $c->param('password');
     my $return   = $c->stash->{form_return}   = $c->param('return_url');
 
+
     # Find the user -- if they have an @, assume it's an email addresss.
     my $person = $c->db->resultset('Person')->find( index($username, '@') == -1
         ? { username => $username }
         : { email    => $username }
     );
 
-    # Check that we have a user account and the password matches, otherwise redirect without login.
-    $c->redirect_to( $return ) unless $person;
-    $c->redirect_to( $return ) unless $person->auth_password->check_password( $password );
+    # If we don't have an account, that is a problem.
+    if ( ! $person ) {
+        $c->redirect_to( $return );
+        return;
+    }
+
+    # It's also a problem if we don't have a password on an account.
+    if ( ! $person->auth_password ) {
+        $c->redirect_to( $return );
+        return;
+    }
+
+    # If we don't have the correct password, that is also a problem.
+    if ( ! $person->auth_password->check_password($password) ) {
+        $c->redirect_to( $return );
+        return;
+    }
 
     # The user checks out, log them in.
     $c->session->{uid} = $person->id;  # Set the user cookie for the login.
-    $c->redirect_to( $return );        # Send them to the page they were on with a refresh.
+    $c->redirect_to( $return );
 }
 
 sub post_logout ($c) {
