@@ -187,6 +187,7 @@ CREATE TABLE person_follow_blog_map (
     id                          serial          PRIMARY KEY,
     person_id                   int             not null references person(id),
     blog_id                     int             not null references blog(id),
+    is_public                   boolean         not null default false,
     created_at                  timestamptz     not null default current_timestamp
 );
 
@@ -195,6 +196,7 @@ CREATE TABLE person_follow_person_map (
     id                          serial          PRIMARY KEY,
     person_id                   int             not null references person(id),
     follow_id                   int             not null references person(id),
+    is_public                   boolean         not null default false,
     created_at                  timestamptz     not null default current_timestamp
 );
 
