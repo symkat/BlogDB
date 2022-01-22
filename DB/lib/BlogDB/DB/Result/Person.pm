@@ -159,6 +159,21 @@ __PACKAGE__->might_have(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 blog_author_maps
+
+Type: has_many
+
+Related object: L<BlogDB::DB::Result::BlogAuthorMap>
+
+=cut
+
+__PACKAGE__->has_many(
+  "blog_author_maps",
+  "BlogDB::DB::Result::BlogAuthorMap",
+  { "foreign.person_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 messages
 
 Type: has_many
@@ -280,8 +295,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-11-04 01:11:09
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:uamr/+RThTQZLjXkv6wcxQ
+# Created by DBIx::Class::Schema::Loader v0.07049 @ 2022-01-22 15:10:12
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wuO+2U+dtid1wW8ftwbqpQ
 
 sub setting {
     my ( $self, $setting, $value ) = @_;

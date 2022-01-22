@@ -161,6 +161,21 @@ __PACKAGE__->add_unique_constraint("blog_url_key", ["url"]);
 
 =head1 RELATIONS
 
+=head2 blog_author_maps
+
+Type: has_many
+
+Related object: L<BlogDB::DB::Result::BlogAuthorMap>
+
+=cut
+
+__PACKAGE__->has_many(
+  "blog_author_maps",
+  "BlogDB::DB::Result::BlogAuthorMap",
+  { "foreign.blog_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 blog_entries
 
 Type: has_many
@@ -237,8 +252,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-12-27 00:20:15
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iStciOl7+em0Pn/uYMpX6A
+# Created by DBIx::Class::Schema::Loader v0.07049 @ 2022-01-22 15:10:12
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:tDkGjf7QXBYuOW0iy0itEA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
