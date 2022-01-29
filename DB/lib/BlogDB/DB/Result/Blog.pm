@@ -281,6 +281,14 @@ sub slug {
     return sprintf( "%d-%s", $self->id, $title );
 }
 
+sub post_count {
+  my ( $self ) = @_;
+
+  my $blog_entry_count = $self->search_related( 'blog_entries', {} )->count;
+
+  return $blog_entry_count;
+}
+
 sub posts {
   my ( $self ) = @_;
 
