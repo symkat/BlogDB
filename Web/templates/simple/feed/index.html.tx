@@ -1,4 +1,4 @@
-%%  cascade simple::_::layout { title => 'Homepage',
+%%  cascade simple::_::layout { title => 'Feed',
 %%      
 %%  }
 
@@ -6,19 +6,15 @@
 
     <div class="row" style="margin-bottom: 2em">
         <ul class="nav nav-tabs">
-%%          if ( $person ) {
-            <li class="nav-item"><a class="nav-link" href="[% $c.url_for( 'feed' ) %]">My Feed</a></li>
-%%          }
-            <li class="nav-item"><a class="nav-link active" href="[% $c.url_for( 'homepage' ) %]">Recent Posts</a></li>
+            <li class="nav-item"><a class="nav-link active" href="[% $c.url_for( 'feed' ) %]">My Feed</a></li>
+
+            <li class="nav-item"><a class="nav-link" href="[% $c.url_for( 'homepage' ) %]">Recent Posts</a></li>
         </ul>
     </div>
 
 
-%%  for $blogs -> $blog {
-    <div class="row">
-%%      include 'simple/_/_blog_sidecard_new.tx' { blog => $blog };
-        <div class="row" style="margin-top: 2em"></div>
-    </div>
+%%  for $entries -> $entry {
+%%      include 'simple/_/_entry_card.tx' { entry => $entry };
 %%  }
 
     <nav aria-label="Pagination">

@@ -159,6 +159,8 @@ sub startup ($self) {
     $r->post( '/login'        )->to( 'Root#post_login'   )->name('do_login'          );
     $r->post( '/logout'       )->to( 'Root#post_logout'  )->name('do_logout'         );
 
+    $auth->get( '/feed')->to( 'Feed#get_feed')->name( 'feed');
+
     # /user/ routes
     $r->get    ( '/user/:name'            )->to( 'User#get_user'     )->name( 'user'             );
     $auth->post( '/user/:name/follow'     )->to( 'User#post_follow'  )->name( 'do_follow_user'   );

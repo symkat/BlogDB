@@ -1,0 +1,25 @@
+<!-- _/_blog_sidecard.tx start -->
+<div class="card" style="padding: 0.2em">
+        <div class="row no-gutters">
+            <div class="col-auto">
+                <img src="[% $blog.img_url %]" style="width: 15em" class="img-fluid" alt="">
+            </div>
+            <div style="padding: 0.6em" class="col">
+                <div class="card-block px-2">
+                    <h3 class="card-title h4"><a href="[% $blog.last_post.url %]" target="_blank">[% $blog.last_post.title %]</a></h2>
+
+                    <div class="small text-muted">
+                        Posted [% $blog.published_ago %]. 
+                    </div>
+                    
+                    <p style="margin-top: 0.5em" class="card-text">
+                        See [% $blog.post_count %] more posts from
+                        <strong><a class="text-decoration-none" style="font-size: 1.2em" href="[% $c.url_for( 'view_blog', 'slug',$blog.slug ) %]">[% $blog.title %]</a></strong>
+                        <em>[% $blog.tagline %]</em>
+                    </p>
+                </div>
+            </div>
+        </div>
+  </div>
+
+<!-- _/_blog_sidecard.tx end -->
