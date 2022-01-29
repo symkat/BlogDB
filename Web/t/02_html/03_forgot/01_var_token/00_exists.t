@@ -24,7 +24,7 @@ $t->post_ok( '/register', form => {
     })->get_ok( '/'
     )->code_block( sub {
         is(shift->stash->{person}->username, 'fred', 'Got the fred after login...');
-    })->stash_has( { entries => [ ]}, "Blog entry array ref exists.");
+    })->stash_has( { blogs => [ ]}, "Blog entry array ref exists.");
 
 # New Session, verify it isn't logged in.
 $t = Test::Mojo::BlogDB->new('BlogDB::Web');
