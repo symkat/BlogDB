@@ -351,6 +351,20 @@ sub is_following_blog {
     return $count >= 1 ? 1 : 0;
 }
 
+sub is_publically_following_blog {
+    my ( $self, $blog_id ) = @_;
+
+    return 0 unless $blog_id;
+
+    my $record = $self->search_related('person_follow_blog_maps', {
+        blog_id => $blog_id,
+    })->first;
+
+    return 0 unless $record;
+
+    return $record->is_public;
+}
+
 sub is_following_person {
     my ( $self, $person_id ) = @_;
 

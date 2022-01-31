@@ -62,17 +62,6 @@ sub get_settings ($c) {
 
 }
 
-sub get_settings_email ($c) {
-    $c->set_template( 'user/settings/email' );
-
-
-}
-
-sub get_settings_password ($c) {
-    $c->set_template( 'user/settings/password' );
-
-}
-
 sub post_settings ($c) {
     $c->set_template( 'user/settings' );
 
@@ -86,14 +75,35 @@ sub post_settings ($c) {
 
 }
 
-
-sub post_bio ($c) {
-    $c->set_template( 'user/settings' );
+sub get_settings_email ($c) {
+    $c->set_template( 'user/settings/email' );
 
 }
 
-sub post_about ($c) {
-    $c->set_template( 'user/settings' );
+sub post_email ($c) {
+    $c->set_template( 'user/settings/email' );
+
+    my $email = $c->stash->{form_email}    = $c->param('email');
+    my $pass  = $c->stash->{form_password} = $c->param('password');
+
+    push @{$c->stash->{errors}}, "Email is required." unless $email;
+    push @{$c->stash->{errors}}, "Password is required." unless $pass;
+
+    return 0 if $c->stash->{errors};
+
+    push @{$c->stash->{errors}}, "Incorrect password"
+        unless $c->stash->{person}->auth_password->check_password($pass);
+
+    return 0 if $c->stash->{errors};
+
+    $c->stash->{person}->email( $email );
+    $c->stash->{person}->update;
+    
+    $c->redirect_to( $c->url_for( 'user_settings_email'));
+}
+
+sub get_settings_password ($c) {
+    $c->set_template( 'user/settings/password' );
 
 }
 
@@ -127,26 +137,38 @@ sub post_password ($c) {
     $c->redirect_to( $c->url_for( 'homepage' ));
 }
 
-sub post_email ($c) {
-    $c->set_template( 'user/settings/email' );
+sub get_settings_following ($c) {
+    $c->set_template( 'user/settings/following' );
 
-    my $email = $c->stash->{form_email}    = $c->param('email');
-    my $pass  = $c->stash->{form_password} = $c->param('password');
 
-    push @{$c->stash->{errors}}, "Email is required." unless $email;
-    push @{$c->stash->{errors}}, "Password is required." unless $pass;
 
-    return 0 if $c->stash->{errors};
-
-    push @{$c->stash->{errors}}, "Incorrect password"
-        unless $c->stash->{person}->auth_password->check_password($pass);
-
-    return 0 if $c->stash->{errors};
-
-    $c->stash->{person}->email( $email );
-    $c->stash->{person}->update;
-    
-    $c->redirect_to( $c->url_for( 'user_settings_email'));
 }
+
+sub post_following ($c) {
+    $c->set_template( 'user/settings/following' );
+
+    my $follow = $c->stash->{person}->find_related('person_follow_blog_maps', {
+        blog_id => $c->param('blog_id'),
+    });
+
+    if ( $c->param('is_public')) {
+        $follow->is_public(1);
+    } else {
+        $follow->is_public(0);
+    }
+    $follow->update;
+}
+
+
+sub post_bio ($c) {
+    $c->set_template( 'user/settings' );
+
+}
+
+sub post_about ($c) {
+    $c->set_template( 'user/settings' );
+
+}
+
 
 1;

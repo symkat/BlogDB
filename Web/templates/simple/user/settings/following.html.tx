@@ -1,0 +1,60 @@
+
+%%  cascade simple::_::layout { title => 'Your Settings - Email',
+%%      
+%%  }
+
+%% override panel -> {
+
+%%      include 'simple/user/settings/_navtabs.tx' { tab => 'following' }
+
+        <div class="row">
+            <!-- Error Handling On LHS -->
+            <div class="col">
+%%              if ( $errors.size() ) { 
+                <div style="margin-top: 2em" class="alert alert-danger" role="alert">
+                    There were errors with your request that could not be resolved:
+                    <ul>
+%%                  for $errors -> $error {
+                        <li>[% $error %]</li>
+%%                  } 
+                    </ul>
+                </div>
+%%              } 
+            </div>
+        </div>
+
+
+
+        <div class="row">
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Blog</th>
+                <th scope="col">Publically Follow?</th>
+              </tr>
+            </thead>
+            <tbody>
+%%      for $c.stash('person').get_followed_blogs -> $blog {
+              <tr>
+                <th scope="row">[% $~blog.index + 1 %]</th>
+                <td>[% $blog.title %]</td>
+                <td>
+                    <form method="post" action="[% $c.url_for( 'do_user_following' ) %]">
+                        <!-- Change view is_adult tags/blogs-->
+                        <div  class="form-check form-switch">
+                            <input name="is_public" [% $c.stash.person.is_publically_following_blog($blog.id) ? " checked" : "" %] class="form-check-input" type="checkbox" id="is_public_bool">
+                            <input name="blog_id" type="hidden" value="[% $blog.id %]">
+                            <label class="form-check-label" for="is_public_bool">Show on my profile</label>
+                            <button style="display: inline; margin-left: 0.5em" type="submit" class="btn btn-primary btn-sm">Confirm</button>
+                        </div>
+                        
+                    </form>
+                </td>
+              </tr>
+%%      }
+            </tbody>
+          </table>
+
+        </div>
+%%  } 

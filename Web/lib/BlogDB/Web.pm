@@ -171,7 +171,9 @@ sub startup ($self) {
     $auth->post( '/user/settings/email'      )->to( 'User#post_email'           )->name( 'do_user_email'         );
     $auth->get ( '/user/settings/password'   )->to( 'User#get_settings_password')->name( 'user_settings_password');
     $auth->post( '/user/settings/password'   )->to( 'User#post_password'        )->name( 'do_user_password'      );
-    #$auth->get ( '/user/settings'            )->to( 'User#get_settings' )->name( 'user_settings'    );
+    $auth->get ( '/user/settings/following'  )->to( 'User#get_settings_following')->name( 'user_settings_following');
+    $auth->post( '/user/settings/following'  )->to( 'User#post_following'        )->name( 'do_user_following'      );
+    #$auth->get ( '/user/settings'           )->to( 'User#get_settings' )->name( 'user_settings'    );
     #$auth->post( '/user/settings/bio'     )->to( 'User#post_bio'     )->name( 'do_user_bio'      );
     #$auth->post( '/user/settings/about'   )->to( 'User#post_about'   )->name( 'do_user_about'    );
 

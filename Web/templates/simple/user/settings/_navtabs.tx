@@ -1,0 +1,10 @@
+        <!-- Begin user/settings/_navtabs.tx-->
+        <div class="row" style="margin-bottom: 2em">
+            <ul class="nav nav-tabs">
+                <li class="nav-item"><a class="nav-link [% $tab == 'settings'  ? 'active' : '' %]" href="[% $c.url_for( 'user_settings' ) %]">Settings</a></li>
+                <li class="nav-item"><a class="nav-link [% $tab == 'email'     ? 'active' : '' %]" href="[% $c.url_for( 'user_settings_email' ) %]">Email</a></li>
+                <li class="nav-item"><a class="nav-link [% $tab == 'password'  ? 'active' : '' %]" href="[% $c.url_for( 'user_settings_password' ) %]">Password</a></li>
+                <li class="nav-item"><a class="nav-link [% $tab == 'following' ? 'active' : '' %]" href="[% $c.url_for( 'user_settings_following' ) %]">Following</a></li>
+            </ul>
+        </div>
+        <!-- End user/settings/_navtabs.tx-->
