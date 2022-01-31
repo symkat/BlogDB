@@ -385,6 +385,14 @@ sub get_followed_blogs {
     } $self->search_related('person_follow_blog_maps')->all ];
 }
 
+sub get_publically_followed_blogs {
+    my ( $self ) = @_;
+
+    return [ map {
+        $_->blog
+    } $self->search_related('person_follow_blog_maps', { is_public => 1})->all ];
+}
+
 use Digest::MD5 qw( md5_hex );
 
 sub email_hash {

@@ -42,7 +42,7 @@
 
 
     <div class="row">
-%%      for $profile.get_followed_blogs -> $blog {
+%%      for $profile.get_publically_followed_blogs -> $blog {
 %%          include 'simple/_/_blog_sidecard.tx' { blog => $blog };
             <div style="margin-top: 2em" class="row"></div>
 %%      }
