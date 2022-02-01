@@ -91,7 +91,7 @@ sub startup ($self) {
 
         # Login via session cookie.
         if ( $c->session('uid') ) {
-            my $person = $c->db->resultset('Person')->find( $c->session('uid') );
+            my $person = $c->db->person( $c->session('uid') );
 
             if ( $person && $person->is_enabled ) {
                 $c->stash->{person} = $person;

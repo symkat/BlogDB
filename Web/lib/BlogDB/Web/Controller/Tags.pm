@@ -5,16 +5,16 @@ use Try::Tiny;
 sub get_tags ($c) {
     $c->set_template( 'tags/index' );
 
-    push @{$c->stash->{tags}},         $c->db->resultset('Tag')->all;
-    push @{$c->stash->{pending_tags}}, $c->db->resultset('PendingTag')->all;
+    push @{$c->stash->{tags}},         $c->db->tags->all;
+    push @{$c->stash->{pending_tags}}, $c->db->pending_tags->all;
 
 }
 
 sub post_suggest_tag ($c) {
     $c->set_template( 'tags/index' );
 
-    push @{$c->stash->{tags}},         $c->db->resultset('Tag')->all;
-    push @{$c->stash->{pending_tags}}, $c->db->resultset('PendingTag')->all;
+    push @{$c->stash->{tags}},         $c->db->tags->all;
+    push @{$c->stash->{pending_tags}}, $c->db->pending_tags->all;
 
     my $tag_name = $c->stash->{form_tag}   = $c->param('tag');
     my $is_adult = $c->stash->{form_adult} = $c->param('is_adult');
@@ -24,8 +24,12 @@ sub post_suggest_tag ($c) {
 
     return 0 if $c->stash->{errors};
 
-    my $tag_exists         = $c->db->resultset('Tag'       )->search({ name => $tag_name })->first;
-    my $pending_tag_exists = $c->db->resultset('PendingTag')->search({ name => $tag_name })->first;
+    # TODO: This section should get some more attention --
+    #        - calling first may leave an open cursor to the db, see DBIC::Helper::ResultSet::OneRow
+    #        - Make use of ResultSetNames as well.
+    #        - But this should probably be moved to the Tag and PendingTag models anyway....
+    my $tag_exists         = $c->db->tags->search({ name => $tag_name })->first;
+    my $pending_tag_exists = $c->db->pending_tags->search({ name => $tag_name })->first;
 
     push @{$c->stash->{errors}}, "There is already a tag with that name."
         if $tag_exists;
@@ -35,7 +39,7 @@ sub post_suggest_tag ($c) {
 
     return 0 if $c->stash->{errors};
 
-    $c->db->resultset('PendingTag')->create({
+    $c->db->pending_tags->create({
         name     => $tag_name,
         is_adult => $is_adult ? 1 : 0,
     });
@@ -46,12 +50,12 @@ sub post_suggest_tag ($c) {
 sub post_vote_tag ($c) {
     $c->set_template( 'tags/index' );
 
-    push @{$c->stash->{tags}},         $c->db->resultset('Tag')->all;
-    push @{$c->stash->{pending_tags}}, $c->db->resultset('PendingTag')->all;
+    push @{$c->stash->{tags}},         $c->db->tags->all;
+    push @{$c->stash->{pending_tags}}, $c->db->pending_tags->all;
 
     my $tag_name = $c->stash->{form_tag} = $c->param('tag');
 
-    my $tag = $c->db->resultset('PendingTag')->search({ name => $tag_name })->first;
+    my $tag = $c->db->pending_tags->search({ name => $tag_name })->first;
 
     push @{$c->stash->{errors}}, "No such tag?"
         unless $tag;
@@ -59,7 +63,7 @@ sub post_vote_tag ($c) {
     return 0 if $c->stash->{errors};
 
     # Find out if the user already voted -- in which case we are toggling the vote.
-    my $vote = $c->db->resultset('TagVote')->search( {
+    my $vote = $c->db->tag_votes->search( {
         tag_id    => $tag->id,
         person_id => $c->stash->{person}->id,
     })->first;
@@ -79,12 +83,13 @@ sub post_vote_tag ($c) {
 sub post_delete_tag ($c) {
     $c->set_template( 'tags/index' );
     
-    push @{$c->stash->{tags}},         $c->db->resultset('Tag')->all;
-    push @{$c->stash->{pending_tags}}, $c->db->resultset('PendingTag')->all;
+    push @{$c->stash->{tags}},         $c->db->tags->all;
+    push @{$c->stash->{pending_tags}}, $c->db->pending_tags->all;
 
     my $tag_name = $c->stash->{form_tag} = $c->param('tag');
     
-    my $tag = $c->db->resultset('PendingTag')->search({ name => $tag_name })->first;
+    # TODO: Fix ->first call
+    my $tag = $c->db->pending_tags->search({ name => $tag_name })->first;
     
     push @{$c->stash->{errors}}, "Not authorized."
         unless $c->stash->{person}->setting( 'can_manage_tags');
@@ -96,7 +101,7 @@ sub post_delete_tag ($c) {
 
     try {
         $c->db->storage->schema->txn_do( sub {
-            $c->db->resultset('TagVote')->search({
+            $c->db->tag_votes->search({
                 tag_id => $tag->id,
             })->delete;
             $tag->delete;
@@ -112,12 +117,12 @@ sub post_delete_tag ($c) {
 sub post_approve_tag ($c) {
     $c->set_template( 'tags/index' );
     
-    push @{$c->stash->{tags}},         $c->db->resultset('Tag')->all;
-    push @{$c->stash->{pending_tags}}, $c->db->resultset('PendingTag')->all;
+    push @{$c->stash->{tags}},         $c->db->tags->all;
+    push @{$c->stash->{pending_tags}}, $c->db->pending_tags->all;
 
     my $tag_name = $c->stash->{form_tag} = $c->param('tag');
 
-    my $tag = $c->db->resultset('PendingTag')->search({ name => $tag_name })->first;
+    my $tag = $c->db->pending_tags->search({ name => $tag_name })->first;
 
     push @{$c->stash->{errors}}, "Not authorized."
         unless $c->stash->{person}->setting( 'can_manage_tags');
@@ -129,11 +134,11 @@ sub post_approve_tag ($c) {
 
     try {
         $c->db->storage->schema->txn_do( sub {
-            $c->db->resultset('Tag')->create({
+            $c->db->tags->create({
                 name     => $tag->name,
                 is_adult => $tag->is_adult,
             });
-            $c->db->resultset('TagVote')->search({
+            $c->db->tag_votes->search({
                 tag_id => $tag->id,
             })->delete;
             $tag->delete;

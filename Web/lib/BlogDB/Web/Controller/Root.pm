@@ -16,7 +16,7 @@ sub get_homepage ($c) {
     $c->stash->{page}{prev} = $page_number - 1;
     $c->stash->{page}{next} = $page_number + 1;
 
-    my $recent_entries = $c->db->resultset('Blog')->recent_entries({
+    my $recent_entries = $c->db->blogs->recent_entries({
         filter_adult       => ! $c->stash->{can_view_adult},
         rows_per_page      => 25,
         ( $page_number
@@ -34,11 +34,11 @@ sub get_homepage ($c) {
     push @{$c->stash->{blogs}}, @{$recent_entries->{results}};
     $c->stash->{page}{has_next} = $recent_entries->{has_next_page};
 
-    push @{$c->stash->{tags_a}},  grep  { $_->id % 2 == 1 } $c->db->resultset('Tag')->search({
+    push @{$c->stash->{tags_a}},  grep  { $_->id % 2 == 1 } $c->db->tags->search({
         ( ! $c->stash->{can_view_adult} ? ( is_adult => 0 ) : () ),
     })->all;
 
-    push @{$c->stash->{tags_b}},  grep  { $_->id % 2 == 0 } $c->db->resultset('Tag')->search({
+    push @{$c->stash->{tags_b}},  grep  { $_->id % 2 == 0 } $c->db->tags->search({
         ( ! $c->stash->{can_view_adult} ? ( is_adult => 0 ) : () ),
     })->all;
 
@@ -75,8 +75,8 @@ sub post_register ($c) {
     return 0 if $c->stash->{errors}; # Drop out of processing the registration if there are any errors.
 
     # Error Checking - No user exists with this username or email address, password is valid.
-    my $is_user_exist  = $c->db->resultset('Person')->find( { username => $username } );
-    my $is_email_exist = $c->db->resultset('Person')->find( { email    => $email    } );
+    my $is_user_exist  = $c->db->person( { username => $username } );
+    my $is_email_exist = $c->db->person( { email    => $email    } );
 
     push @{$c->stash->{errors}}, "Password & Confirmation must match."       unless $password eq $confirm;
     push @{$c->stash->{errors}}, "Password must be at least 7 chars."        unless 7 < length($password);
@@ -89,7 +89,7 @@ sub post_register ($c) {
 
     my $person = try {
         $c->db->storage->schema->txn_do( sub {
-            my $person = $c->db->resultset('Person')->create({
+            my $person = $c->db->people->create({
                 email    => $email,
                 username => $username,
             });
@@ -118,7 +118,7 @@ sub post_forgot ($c) {
     my $username = $c->stash->{form_username} = $c->param('username');
 
     # Find the user -- if they have an @, assume it's an email addresss.
-    my $person = $c->db->resultset('Person')->find( index($username, '@') == -1
+    my $person = $c->db->person( index($username, '@') == -1
         ? { username => $username }
         : { email    => $username }
     );
@@ -160,7 +160,7 @@ sub post_reset ($c) {
 
     return 0 if $c->stash->{errors}; # Drop out of processing, there are errors..
 
-    my $token = $c->db->resultset('PasswordToken')->search({
+    my $token = $c->db->password_tokens->search({
         token       => $form_token,
         is_redeemed => 0,
     })->first;
@@ -195,7 +195,7 @@ sub post_login ($c) {
 
 
     # Find the user -- if they have an @, assume it's an email addresss.
-    my $person = $c->db->resultset('Person')->find( index($username, '@') == -1
+    my $person = $c->db->person( index($username, '@') == -1
         ? { username => $username }
         : { email    => $username }
     );

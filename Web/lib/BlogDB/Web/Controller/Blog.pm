@@ -25,7 +25,7 @@ sub get_blogs ( $c ) {
     $c->stash->{page}{prev} = $page_number - 1;
     $c->stash->{page}{next} = $page_number + 1;
 
-    my $recent_entries = $c->db->resultset('Blog')->recent_entries({
+    my $recent_entries = $c->db->blog->recent_entries({
         filter_adult       => ! $c->stash->{can_view_adult},
         rows_per_page      => 25,
         ( $page_number
@@ -38,11 +38,11 @@ sub get_blogs ( $c ) {
     push @{$c->stash->{blogs}}, @{$recent_entries->{results}};
     $c->stash->{page}{has_next} = $recent_entries->{has_next_page};
 
-    push @{$c->stash->{tags_a}},  grep  { $_->id % 2 == 1 } $c->db->resultset('Tag')->search({
+    push @{$c->stash->{tags_a}},  grep  { $_->id % 2 == 1 } $c->db->tag({
         ( ! $c->stash->{can_view_adult} ? ( is_adult => 0 ) : () ),
     })->all;
 
-    push @{$c->stash->{tags_b}},  grep  { $_->id % 2 == 0 } $c->db->resultset('Tag')->search({
+    push @{$c->stash->{tags_b}},  grep  { $_->id % 2 == 0 } $c->db->tag({
         ( ! $c->stash->{can_view_adult} ? ( is_adult => 0 ) : () ),
     })->all;
 }
@@ -50,13 +50,13 @@ sub get_blogs ( $c ) {
 sub get_view_blog ($c) {
     $c->set_template( 'blog/item' );
 
-    my $blog = $c->stash->{blog} = $c->db->resultset('Blog')->find(
-        $c->_slug_to_id($c->param('slug'))
-    );
+    my $slug = $c->_slug_to_id($c->param('slug'));
+
+    my $blog = $c->stash->{blog} = $c->db->blog($slug);
 }
 
 sub get_view_random_blog ( $c ) {
-    my @blogs = $c->db->resultset('Blog')->search({ is_adult => 0 })->all;
+    my @blogs = $c->db->blog({ is_adult => 0 })->all;
 
     my $blog = $blogs[int rand scalar @blogs];
 
@@ -74,7 +74,7 @@ sub get_edit_blog ($c) {
         return 0;
     }
 
-    my $blog = $c->stash->{blog} = $c->db->resultset('Blog')->find(
+    my $blog = $c->stash->{blog} = $c->db->blog(
         $c->_slug_to_id($c->param('slug'))
     );
 
@@ -87,7 +87,7 @@ sub get_edit_blog ($c) {
     
     # I should add this to the PendingBlog/Blog models - all tags + checked / not checked status.
     my %seen = map { $_->tag_id => 1 } $blog->search_related('blog_tag_maps', {})->all;
-    foreach my $tag ( $c->db->resultset('Tag')->all ) {
+    foreach my $tag ( $c->db->tag->all ) {
         push @{$c->stash->{tags}}, {
             id      => $tag->id,
             name    => $tag->name,
@@ -107,7 +107,7 @@ sub post_edit_blog ($c) {
         $c->redirect_to( $c->url_for( 'homepage' ) );
         return 0;
     }
-    my $blog = $c->stash->{blog} = $c->db->resultset('Blog')->find(
+    my $blog = $c->stash->{blog} = $c->db->blog(
         $c->_slug_to_id($c->param('slug'))
     );
 
@@ -133,7 +133,7 @@ sub post_edit_blog ($c) {
 }
 
 sub post_blog_follow ($c) {
-    my $blog = $c->db->resultset('Blog')->find($c->param('blog_id'));
+    my $blog = $c->db->blog($c->param('blog_id'));
 
     # TODO: Throw an error if we don't have {person}->id, or $blog.
     $c->stash->{person}->create_related('person_follow_blog_maps', {
@@ -144,11 +144,11 @@ sub post_blog_follow ($c) {
 }
 
 sub post_blog_unfollow ($c) {
-    my $blog = $c->db->resultset('Blog')->find($c->param('blog_id'));
+    my $blog = $c->db->blog($c->param('blog_id'));
 
     # TODO: Throw an error if we don't have {person}->id, or $blog.
 
-    $c->db->resultset('PersonFollowBlogMap')->search({
+    $c->db->person_follow_blog_map({
         person_id => $c->stash->{person}->id,
         blog_id   => $blog->id,
     })->delete;
@@ -202,7 +202,7 @@ sub post_unpublish ($c) {
 sub get_new_blogs ($c) {
     $c->set_template( 'blog/new/index' );
 
-    push @{$c->stash->{blogs}}, $c->db->resultset('PendingBlog')->all;
+    push @{$c->stash->{blogs}}, $c->db->pending_blogs->all;
 }
 
 sub post_new_blog ($c) {
@@ -230,7 +230,7 @@ sub post_new_blog ($c) {
         $c->session->{edit_token} = Data::UUID->new->create_str,
     }
 
-    my $blog = $c->db->resultset('PendingBlog')->create({
+    my $blog = $c->db->pending_blogs->create({
         state => 'initial',
         url   => $blog_url,
         ( exists $c->stash->{person} 
@@ -248,7 +248,7 @@ sub get_edit_new_blog ($c) {
     $c->set_template( 'blog/new/edit' );
 
     my $blog_id = $c->stash->{blog_id} = $c->param('id');
-    my $blog    = $c->stash->{blog}    = $c->db->resultset('PendingBlog')->find( $blog_id );
+    my $blog    = $c->stash->{blog}    = $c->db->pending_blog( $blog_id );
     
     # If the blog is not yet ready, we will use an alternative page and
     # refresh until the blog data has been gathered.
@@ -273,7 +273,7 @@ sub get_edit_new_blog ($c) {
     $c->stash->{form_adult}   = $blog->is_adult;
 
     my %seen = map { $_->tag_id => 1 } $blog->search_related('pending_blog_tag_maps', {})->all;
-    foreach my $tag ( $c->db->resultset('Tag')->all ) {
+    foreach my $tag ( $c->db->tags->all ) {
         push @{$c->stash->{tags}}, {
             id      => $tag->id,
             name    => $tag->name,
@@ -294,7 +294,7 @@ sub get_edit_new_blog ($c) {
 sub post_edit_new_blog ($c) {
 
     my $blog_id = $c->stash->{blog_id} = $c->param('id');
-    my $blog    = $c->stash->{blog}    = $c->db->resultset('PendingBlog')->find( $blog_id );
+    my $blog    = $c->stash->{blog}    = $c->db->pending_blog( $blog_id );
     my $person  = $c->stash->{person};
 
     # We can continue if:
@@ -361,7 +361,7 @@ sub post_edit_new_blog ($c) {
 }
 
 sub post_delete_new_blog ($c) {
-    my $pb = $c->db->resultset('PendingBlog')->find( $c->param('id') );
+    my $pb = $c->db->pending_blog( $c->param('id') );
 
     push @{$c->stash->{errors}}, 'No such blog id.'
         unless $pb;
@@ -384,7 +384,7 @@ sub post_delete_new_blog ($c) {
 }
 
 sub post_publish_new_blog ($c) {
-    my $pb = $c->db->resultset('PendingBlog')->find( $c->param('id') );
+    my $pb = $c->db->pending_blog( $c->param('id') );
 
     push @{$c->stash->{errors}}, 'No such blog id.'
         unless $pb;
@@ -397,7 +397,7 @@ sub post_publish_new_blog ($c) {
         return 0;
     }
 
-    my $blog = $c->db->resultset('Blog')->create({
+    my $blog = $c->db->blogs->create({
         title    => $pb->title, 
         url      => $pb->url,
         img_url  => $pb->img_url,

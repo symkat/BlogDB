@@ -24,7 +24,7 @@ sub run {
 
     my $app = $self->app;
 
-    my $rs = $app->db->resultset('Blog')->search({});
+    my $rs = $app->db->blogs->search({});
 
     while ( my $blog = $rs->next ) {
         print "Checking " . $blog->title . "\n"

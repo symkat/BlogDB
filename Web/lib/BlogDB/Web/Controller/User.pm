@@ -6,7 +6,7 @@ use Mojo::Base 'Mojolicious::Controller', -signatures;
 sub get_user ($c) {
     $c->set_template( 'user/index' );
     
-    $c->stash->{profile} = $c->db->resultset('Person')->find({
+    $c->stash->{profile} = $c->db->person({
         username => $c->param('name'),
     });
 
@@ -20,9 +20,7 @@ sub post_follow ($c) {
     $c->set_template( 'user/index' );
 
 
-    my $follow = $c->db->resultset('Person')->find({
-        id => $c->param('person_id'),
-    });
+    my $follow = $c->db->person({ id => $c->param('person_id') });
 
     return 0 unless $follow;
 
@@ -37,15 +35,13 @@ sub post_follow ($c) {
 
 
 sub post_unfollow ($c) {
-    my $follow = $c->db->resultset('Person')->find({
-        id => $c->param('person_id'),
-    });
+    my $follow = $c->db->person({ id => $c->param('person_id') });
 
     return 0 unless $follow;
 
     # TODO: Throw an error if we don't have {person}->id, or $blog.
 
-    $c->db->resultset('PersonFollowPersonMap')->search({
+    $c->db->person_follows_person_maps->search({
         person_id => $c->stash->{person}->id,
         follow_id => $follow->id,
     })->delete;
